@@ -1,0 +1,32 @@
+global:
+  storageClass: "nfs-client"
+mode: standalone
+auth:
+  rootUser: root
+  rootPassword: "openIM123"
+defaultBuckets: "openim"
+persistence:
+  size: 1Gi
+
+ingress:
+  enabled: true
+  ingressClassName: "nginx"
+  hostname: openim2.nsddd.top #hostname for minioconsole
+  path: /
+  servicePort: minio-console
+  extraTls:
+    - hosts:
+        - openim2.nsddd.top
+      secretName: openim2tls
+
+apiIngress:
+  enabled: true
+  ingressClassName: "nginx"
+  hostname: openim3.nsddd.top #hostname for minioapi
+  path: /
+  pathType: ImplementationSpecific
+  servicePort: minio-api
+  extraTls:
+    - hosts:
+        - openim3.nsddd.top
+      secretName: openim3tls
