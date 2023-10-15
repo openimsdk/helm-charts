@@ -3,7 +3,7 @@
 # 前提条件
 用户要自己安装了k8s，并且最少有两个域名（一个域名用来做minio的api访问，一个接口用来做openimserver的api访问），
 配置了好了storageclass（本实例用nfs-client为例）。ps，下个版本会推出居于一个域名的访问和居于ip的url访问。
-
+说明：如果用户k8s系统ingress-control前节点配置了loadbalance，所有*-config.yaml的域名信息都不需要配置tls项
 # 安装中间件
 helm add im-infra https://xxxxx.xxx
 helm install im-mysql im-infra/mysql -f mysql-config.yaml
@@ -30,3 +30,4 @@ helm install imwebfront -f webfront-config.yaml ./webfront/
 # 安装adminfront
 helm install imadminfront -f adminfront-config.yaml ./adminfront/
 说明：要在adminfront-config.yaml.yaml配置域名信息
+
