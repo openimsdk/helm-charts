@@ -2,6 +2,48 @@
 
 OpenIM Helm charts 用于在Kubernetes集群上部署和管理OpenIM即时消息通信平台及其依赖的中间件。
 
+## User 
+
+[Helm](https://helm.sh/) must be installed to use the charts. Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
+
+Once Helm is set up properly, add the repository as follows:
+
+```bash
+helm repo add prometheus-community https://openim.github.io/helm-charts
+```
+
+You can then run `helm search repo openim` to see the charts.
+
+### Install Chart
+
+```
+helm install [RELEASE_NAME] openim/openim-server
+```
+
+*See [configuration](https://github.com/openim/helm-charts/tree/main/charts/) below.*
+
+*See [helm install](https://helm.sh/docs/helm/helm_install/) for command documentation.*
+
+### Uninstall Chart
+
+```
+helm uninstall [RELEASE_NAME]
+```
+
+This removes all the Kubernetes components associated with the chart and deletes the release.
+
+*See [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) for command documentation.*
+
+
+### Upgrading Chart
+
+```
+helm upgrade [RELEASE_NAME] [CHART] --install
+```
+
+*See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documentation.*
+
+
 ## 目录结构
 
 ### adminfront
