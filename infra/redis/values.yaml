@@ -1479,7 +1479,7 @@ tls:
   ## @param tls.certKeyFilename Certificate Key filename
   ##
   certKeyFilename: ""
-  ## @param tls.certCAFilename CA Certificate filename
+  ## @param tls.certCAFilename CA Certificate filenamegi
   ##
   certCAFilename: ""
   ## @param tls.dhParamsFilename File containing DH params (in order to support DH based ciphers)
