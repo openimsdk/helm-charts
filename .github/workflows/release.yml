@@ -1,61 +1,61 @@
-name: Release
+name: Release Charts
 
 on:
   push:
-    branches-ignore:
-      - '**'
-    tags:
-      - '*'
-
+    branches:
+      - main
 
 jobs:
-  goreleaser:
+  release:
+    permissions:
+      contents: write # to push chart release and create a release (helm/chart-releaser-action)
+      packages: write # needed for ghcr access
+      id-token: write # needed for keyless signing
+
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Install Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.8.1
+      - name: Fetch history
+        run: git fetch --prune --unshallow
 
-      - name: Prepare
-        id: prepare
+      - name: Configure Git
         run: |
-          echo "tag_name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-          echo "$tag_name"
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Helm package
-        run: |
-          mkdir -p charts
-          cp -rf openIM ./charts/
-          latest_release=${{ steps.prepare.outputs.tag_name }}
-          if [[ ${latest_release#v} == "3.3.0" ]]; then
-            sed -i "s#default#errcode#g" charts/openIM/Chart.yaml
-            sed -i "s#0.0.0#3.3.0#g" charts/openIM/Chart.yaml
-          else
-            sed -i "s#0.0.0#${latest_release#v}#g" charts/openIM/Chart.yaml
-            sed -i "s#default#${latest_release#v}#g" charts/openIM/Chart.yaml
-          fi
-          helm package charts/openIM
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v1
+      - name: Set up Helm
+        uses: azure/setup-helm@v3.5
         with:
-          version: latest
-          args: release --rm-dist --timeout=1h
+          version: v3.13.0
+
+      - name: Add dependency chart repos
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.5.0
         env:
-          VERSION: ${{ steps.prepare.outputs.tag_name }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  trigger-workflow-build-helm-chart:
-    needs: [ goreleaser ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: Trigger cluster image workflow
-        uses: peter-evans/repository-dispatch@v2
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_GENERATE_RELEASE_NOTES: true
+
+      # see https://github.com/helm/chart-releaser/issues/183
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          event-type: release_success
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "version": "${{ env.RELEASE_VERSION }}"}'
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push charts to GHCR
+        run: |
+          shopt -s nullglob
+          for pkg in .cr-release-packages/*; do
+            if [ -z "${pkg:-}" ]; then
+              break
+            fi
+            helm push "${pkg}" "oci://ghcr.io/${GITHUB_REPOSITORY_OWNER}/charts"
+          done

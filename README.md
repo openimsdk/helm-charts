@@ -1,8 +1,4 @@
-
-
-# Response and Translation into English:
-
-## OpenIM Helm Charts
+# OpenIM Helm Charts
 
 OpenIM Helm Charts are utilized for easy deployment and management of the OpenIM instant messaging platform and its related middleware on Kubernetes clusters.
 

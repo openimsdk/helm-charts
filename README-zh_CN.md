@@ -1,5 +1,7 @@
 # OpenIM Helm Charts
 
+!!! 中文文档可能不是最新的，请参考 [英文文档](./README.md)。
+
 OpenIM Helm Charts 用于在 Kubernetes 集群上轻松部署和管理 OpenIM 即时消息通信平台及其相关中间件。
 
 ## 用户指南
