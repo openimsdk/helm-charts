@@ -1,0 +1,59 @@
+#This configuration file is used to override the use of the value.yaml variable.
+#Currently, only the configuration with ingressName as nginx is provided.
+#If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
+image:
+  repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/admin-api
+  pullPolicy: Always
+  tag: "dev"
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  hosts:
+    - host: openim.server.com
+      paths:
+        - path: /complete_admin(/|$)(.*)
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: webapitls  #your hostname tls
+      hosts:
+        - openim.server.com
+chat-api:
+  image:
+    repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/chat-api
+    pullPolicy: Always
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+    hosts:
+      - host: openim.server.com
+        paths:
+          - path: /chat(/|$)(.*)
+            pathType: ImplementationSpecific
+    tls:
+      - secretName: webapitls  #your hostname tls
+        hosts:
+          - openim.server.com
+
+
+admin-rpc:
+  image:
+    repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/admin-rpc
+    pullPolicy: Always
+    tag: "dev"
+chat-rpc:
+  image:
+    repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/chat-rpc
+    pullPolicy: Always
+    tag: "dev"
+
+
+
+
+
