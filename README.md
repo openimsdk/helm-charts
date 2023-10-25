@@ -122,7 +122,7 @@ These configuration files include account information, for example, `minio-confi
 ## Install OpenIM Server Service
 
 ```bash
-helm install openim-server -f open-im-server-config.yaml -f notification.yaml ./openim/open-im-server/
+helm install openim-server -f k8s-open-im-server-config.yaml -f notification.yaml ./openim/openim-server/
 ```
 
 Ensure that the domain information is configured in `open-im-server-config.yaml`. Account information defaults to sync with the middleware (`infra/`) `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `open-im-server-config.yaml`.
@@ -130,7 +130,7 @@ Ensure that the domain information is configured in `open-im-server-config.yaml`
 ## Install OpenIM Chat Service
 
 ```bash
-helm install openim-chat -f chat-server-config.yaml ./openim/openim-chat
+helm install openim-chat -f k8s-chat-server-config.yaml ./openim/openim-chat/
 ```
 
-Ensure that the domain information is configured in `chat-server-config.yaml`. Account information defaults to sync with the middleware `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `chat-server-config.yaml`.
+Ensure that the domain information is configured in `k8s-chat-server-config.yaml`. Account information defaults to sync with the middleware `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `k8s-chat-server-config.yaml`.
