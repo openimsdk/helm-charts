@@ -106,23 +106,25 @@ The following commands will respectively install MySQL, Kafka, MinIO, MongoDB, a
 
 ```bash
 helm repo add openim-infra https://xxxxx.xxx
-helm install im-mysql im-infra/mysql -f mysql-config.yaml
-helm install im-kafka im-infra/kafka -f kafka-config.yaml
-helm install im-minio im-infra/minio -f minio-config.yaml
-helm install im-mongodb im-infra/mongodb -f mongodb-config.yaml
-helm install im-redis im-infra/redis -f redis-config.yaml
+helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
+helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
+helm install im-minio infra/minio -f infra/minio-config.yaml -n openim
+helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
+helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 ```
+
+
 
 > **Note**
 >
-> If the OpenIM cluster is deployed in the `openim` namespace, use the `-n` argument to specify the namespace. If the namespace does not exist, you can use `--create-namespace` to create a new namespace.
-
-These configuration files include account information, for example, `minio-config.yaml` also includes domain information.
+> If the OpenIM cluster is deployed in the `openim` namespace, use the `-n` argument to specify the namespace. If the namespace does not exist, you can use `--create-namespace` to create a new namespace. Please do not modify the following chart names: `im-mysql`, `im-kafka`, `im-minio`, `im-mongodb`, `im-redis`, otherwise, you will need to synchronize the `serviceName` information to `config-imserver.yaml` and `config-chatserver.yaml`. Please do not modify the account information in these five configuration files, otherwise, you will need to synchronize the middleware account information to `config-imserver.yaml` and `config-chatserver.yaml`.
+>
+> These configuration files include account information, for example, `minio-config.yaml` also includes domain information.
 
 ## Install OpenIM Server Service
 
 ```bash
-helm install openimserver -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml  ./openim/openim-server/
+helm install openimserver -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml  ./openim/openim-server/ -n openim
 ```
 
 Ensure that the domain information is configured in `open-im-server-config.yaml`. Account information defaults to sync with the middleware (`infra/`) `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `open-im-server-config.yaml`.
@@ -130,7 +132,23 @@ Ensure that the domain information is configured in `open-im-server-config.yaml`
 ## Install OpenIM Chat Service
 
 ```bash
-helm install openim-chat -f k8s-chat-server-config.yaml ./openim/openim-chat/
+helm install openim-chat -f k8s-chat-server-config.yaml ./openim/openim-chat/ -n openim
 ```
 
 Ensure that the domain information is configured in `k8s-chat-server-config.yaml`. Account information defaults to sync with the middleware `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `k8s-chat-server-config.yaml`.
+
+## Install Web Frontend
+
+```bash
+helm install imwebfront -f k8s-webfront-config.yaml ./openim/webfront/ -n openim
+```
+
+**Note**: Please configure the domain information in `k8s-webfront-config.yaml`, and modify it to your actual domain and TLS name.
+
+## Install Admin Frontend
+
+```bash
+helm install imadminfront -f k8s-adminfront-config.yaml ./openim/adminfront/ -n openim
+```
+
+**Note**: Please configure the domain information in `k8s-adminfront-config.yaml`, and modify it to your actual domain and TLS name.
