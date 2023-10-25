@@ -122,7 +122,7 @@ These configuration files include account information, for example, `minio-confi
 ## Install OpenIM Server Service
 
 ```bash
-helm install openim-server -f k8s-open-im-server-config.yaml -f notification.yaml ./openim/openim-server/
+helm install openimserver -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml  ./openim/openim-server/
 ```
 
 Ensure that the domain information is configured in `open-im-server-config.yaml`. Account information defaults to sync with the middleware (`infra/`) `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `open-im-server-config.yaml`.
