@@ -1,111 +1,56 @@
 # OpenIM Helm Charts
 
-OpenIM Helm Charts are utilized for easy deployment and management of the OpenIM instant messaging platform and its related middleware on Kubernetes clusters.
+OpenIM Helm Charts simplify deployment and management of OpenIM instant messaging platform and associated middleware on Kubernetes clusters.
 
 ## Prerequisites
 
-+ Installed and configured Kubernetes (K8s) environment.
-+ At least two available domain names: one for MinIO API access, and another for OpenIM Server API access.
-+ Configured StorageClass (this example uses NFS-Client).
-+ (Optional) If your K8s system’s Ingress Controller nodes are configured with LoadBalancer, all domain information in `-config.yaml` files do not need to configure TLS items.
+1. Installed and configured Kubernetes (K8s) environment.
+2. Two domain names: one for MinIO API, another for OpenIM Server API.
+3. Configured StorageClass (e.g., NFS-Client).
+4. *(Optional)* For K8s with LoadBalancer-configured Ingress Controller nodes, no need to configure TLS items in `-config.yaml` files.
 
-> **Note**: The next version will introduce single domain access and IP-based URL access features.
+> **Note**: The next release will feature single domain access and IP-based URL access.
 
-## User Guide
+## Quick Start
 
-To use these Helm Charts, you first need to install [Helm](https://helm.sh/). Please refer to Helm's [documentation](https://helm.sh/docs/) to get started with Helm.
+1. **Setup Helm**:
 
-Once Helm is installed, add the Helm repository as follows:
+   + Install [Helm](https://helm.sh/).
+   + Add repository: `helm repo add openim https://openim.github.io/helm-charts`
+   + Search available charts: `helm search repo openim`
 
-```
-helm repo add openim https://openim.github.io/helm-charts
-```
+   > Because Github packages are OCI compliant, helm packages on GitHub do not require the `helm repo add` to add packages
 
-Next, you can run `helm search repo openim` to view the available Charts.
+2. **Install Middleware**:
 
-### Install Chart
+   + Add repo: `helm repo add openim-infra https://xxxxx.xxx`
+   + Deploy middleware services using commands in the `Install Middleware` section below.
 
-```
-helm install [RELEASE_NAME] openim/openim-server
-```
+3. **Deploy OpenIM Services**: Use commands in `Install OpenIM Server Service`, `Install OpenIM Chat Service`, `Install Web Frontend`, and `Install Admin Frontend` sections.
 
-*See the [configuration](https://github.com/openim/helm-charts/tree/main/charts/) information below.*
+## Commands Overview
 
-*For command documentation, refer to [helm install](https://helm.sh/docs/helm/helm_install/).*
++ **Install**: `helm install [RELEASE_NAME] openim/openim-server`
++ **Uninstall**: `helm uninstall [RELEASE_NAME]`
++ **Upgrade**: `helm upgrade [RELEASE_NAME] [CHART] --install`
++ **List Releases**: `helm list`
 
-### Uninstall Chart
-
-```
-helm uninstall [RELEASE_NAME]
-```
-
-This will delete all Kubernetes components related to the Chart and uninstall the release.
-
-*For command documentation, refer to [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/).*
-
-### Upgrade Chart
-
-```
-helm upgrade [RELEASE_NAME] [CHART] --install
-```
-
-*For command documentation, refer to [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/).*
-
-### List Releases
-
-```bash
-helm list
-```
+*For detailed command explanations, visit Helm's official [documentation](https://helm.sh/docs/).*
 
 ## Directory Structure
 
-### adminfront
++ **adminfront**: Helm Chart for "adminfront" service with `Chart.yaml`, `templates/`, and `values.yaml`.
++ **adminfront-config.yaml**: Configuration for "adminfront".
++ **chat-server**: Helm Chart for "chat-server" with associated files.
++ **infra**: Contains Helm Charts/configurations for middleware OpenIM relies on.
 
-This directory contains the Helm Chart for the "adminfront" service.
-
-+ `Chart.yaml`: Contains basic information and version of the Chart.
-+ `templates/`: Contains Kubernetes template files.
-+ `values.yaml`: Default configuration file.
-
-### adminfront-config.yaml
-
-Contains custom configuration information for the "adminfront" service.
-
-### chat-server
-
-This directory contains the Helm Chart for the "chat-server" service.
-
-+ `Chart.yaml`: Contains basic information and version of the Chart.
-+ `charts/`: (Optional) If the Chart depends on other Charts, they can be placed in this directory.
-+ `templates/`: Contains Kubernetes template files.
-+ `values.yaml`: Default configuration file.
-
-### infra
-
-This directory contains all Helm Charts or related configurations for the middleware that OpenIM depends on.
-
-+ `ingress-nginx`, `kafka`, `minio`, `mongodb`, `mysql`, `nfs-subdir-external-provisioner`, `redis`: These directories may contain Helm Charts for the corresponding middleware.
-+ `kafka-config.yaml`, `minio-config.yaml`, `mongodb-config.yaml`, `mysql-config.yaml`, `redis-config.yaml`: These files contain custom configurations for the corresponding middleware.
-
-## Prerequisites
-
-+ Installed and configured Kubernetes (K8s) environment.
-+ At least two available domain names: one for MinIO API access, and another for OpenIM Server API access.
-+ Configured StorageClass (this example uses NFS-Client).
-+ (Optional) If your K8s system’s Ingress Controller nodes are configured with LoadBalancer, all domain information in `-config.yaml` files do not need to configure TLS items.
-
-> Note: The next version will introduce single domain access and IP-based URL access features.
+Detailed directory info can be found in the respective directories.
 
 ## Install Middleware
 
-Before deploying the OpenIM services, we need to deploy some dependent middleware services.
-
-For easy deployment and management, we provide a set of Helm Charts for these middleware, located in the infra directory.
-
-The following commands will respectively install MySQL, Kafka, MinIO, MongoDB, and Redis middleware:
+Deploy required middleware services:
 
 ```bash
-helm repo add openim-infra https://xxxxx.xxx
 helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
 helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
 helm install im-minio infra/minio -f infra/minio-config.yaml -n openim
@@ -113,13 +58,13 @@ helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
 helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 ```
 
-
-
 > **Note**
 >
 > If the OpenIM cluster is deployed in the `openim` namespace, use the `-n` argument to specify the namespace. If the namespace does not exist, you can use `--create-namespace` to create a new namespace. Please do not modify the following chart names: `im-mysql`, `im-kafka`, `im-minio`, `im-mongodb`, `im-redis`, otherwise, you will need to synchronize the `serviceName` information to `config-imserver.yaml` and `config-chatserver.yaml`. Please do not modify the account information in these five configuration files, otherwise, you will need to synchronize the middleware account information to `config-imserver.yaml` and `config-chatserver.yaml`.
 >
 > These configuration files include account information, for example, `minio-config.yaml` also includes domain information.
+
+
 
 ## Install OpenIM Server Service
 
@@ -127,7 +72,7 @@ helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 helm install openimserver -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml  ./openim/openim-server/ -n openim
 ```
 
-Ensure that the domain information is configured in `open-im-server-config.yaml`. Account information defaults to sync with the middleware (`infra/`) `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `open-im-server-config.yaml`.
+Ensure domain info in `open-im-server-config.yaml`. Sync with middleware's `-config.yaml` if changes were made during its setup.
 
 ## Install OpenIM Chat Service
 
@@ -135,20 +80,9 @@ Ensure that the domain information is configured in `open-im-server-config.yaml`
 helm install openim-chat -f k8s-chat-server-config.yaml ./openim/openim-chat/ -n openim
 ```
 
-Ensure that the domain information is configured in `k8s-chat-server-config.yaml`. Account information defaults to sync with the middleware `-config.yaml` files. If `config.yaml` was modified when installing the middleware, please sync modify `k8s-chat-server-config.yaml`.
+## Install Web and Admin Frontends
 
-## Install Web Frontend
++ **Web**: `helm install imwebfront -f k8s-webfront-config.yaml ./openim/webfront/ -n openim`
++ **Admin**: `helm install imadminfront -f k8s-adminfront-config.yaml ./openim/adminfront/ -n openim`
 
-```bash
-helm install imwebfront -f k8s-webfront-config.yaml ./openim/webfront/ -n openim
-```
-
-**Note**: Please configure the domain information in `k8s-webfront-config.yaml`, and modify it to your actual domain and TLS name.
-
-## Install Admin Frontend
-
-```bash
-helm install imadminfront -f k8s-adminfront-config.yaml ./openim/adminfront/ -n openim
-```
-
-**Note**: Please configure the domain information in `k8s-adminfront-config.yaml`, and modify it to your actual domain and TLS name.
+**Note**: Set domain details in respective `-config.yaml` files, reflecting your domain and TLS details.
