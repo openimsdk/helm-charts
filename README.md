@@ -16,7 +16,7 @@ OpenIM Helm Charts simplify deployment and management of OpenIM instant messagin
 1. **Setup Helm**:
 
    + Install [Helm](https://helm.sh/).
-   + Add repository: `helm repo add openim https://openim.github.io/helm-charts`
+   + Add repository: `helm repo add openim https://openimsdk.github.io/helm-charts`
    + Search available charts: `helm search repo openim`
 
    > Because Github packages are OCI compliant, helm packages on GitHub do not require the `helm repo add` to add packages
