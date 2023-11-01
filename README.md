@@ -46,6 +46,100 @@ OpenIM Helm Charts simplify deployment and management of OpenIM instant messagin
 
 Detailed directory info can be found in the respective directories.
 
+
+## Setting up ingress-nginx and NFS in Kubernetes
+
+Before we dive into the installation steps for `ingress-nginx` and `NFS`, it's important to note that the methods provided here are basic. Depending on the complexity of your environment and requirements, you might want to explore other choices.
+
+### 1. Installing NFS (Network File System)
+
+NFS is widely used for sharing directories and files over the network. Here, we're focusing on the NFS Subdir External Provisioner which dynamically provisions NFS persistent volumes.
+
+#### Method 1: Using Helm from the Official Repository
+
+The official Helm repository contains a detailed guide on how to install the `nfs-subdir-external-provisioner`. You can access and read more about it [here](https://github.com/openimsdk/helm-charts/tree/main/infra/nfs-subdir-external-provisioner).
+
+#### Method 2: Using the Local Repository
+
+If you prefer to use the local repository for installation, follow these steps:
+
+1. Update the `config.yaml` file under the directory [infra/nfs-subdir-external-provisioner](https://github.com/openimsdk/helm-charts/tree/main/infra/nfs-subdir-external-provisioner). Modify the `image` and `nfs` values:
+
+```
+image:
+  repository: m.daocloud.io/registry.k8s.io/sig-storage/nfs-subdir-external-provisioner
+
+nfs:
+  server: YOUR_NFS_SERVER_IP
+  path: YOUR_NFS_MOUNT_PATH
+```
+
+Replace `YOUR_NFS_SERVER_IP` with your internal or public IP address and `YOUR_NFS_MOUNT_PATH` with your NFS mount directory.
+
+1. Deploy NFS using the following Helm command:
+
+```
+helm install nfs-subdir-external-provisioner ./infra/nfs-subdir-external-provisioner/ -f infra/nfs-subdir-external-provisioner/config.yaml -n openim
+```
+
+### 2. Installing ingress-nginx
+
+`ingress-nginx` is an Ingress controller for Kubernetes that provides NGINX as a reverse proxy and load balancer.
+
+#### Configuration
+
+Update the [config.yaml](https://github.com/openimsdk/helm-charts/blob/main/infra/ingress-nginx/config.yaml) file under the directory `infra/ingress-nginx`:
+
+```bash
+controller:
+  name: controller
+  image:
+    registry: m.daocloud.io
+    image: registry.k8s.io/ingress-nginx/controller
+  hostNetwork: true
+  service:
+    enabled: true
+    type: NodePort
+    nodePorts:
+      http: 32080
+      https: 32443
+      tcp:
+        8080: 32808
+  admissionWebhooks:
+    patch:
+      enabled: true
+      image:
+        registry: m.daocloud.io
+        image: registry.k8s.io/ingress-nginx/kube-webhook-certgen
+
+defaultBackend:
+  enabled: false
+  name: defaultbackend
+  image:
+    registry: m.daocloud.io
+    image: registry.k8s.io/defaultbackend-amd64
+```
+
+#### Installation:
+
+Execute the following Helm command to deploy `ingress-nginx`:
+
+```bash
+helm install ingress-nginx ./infra/ingress-nginx/ -f infra/ingress-nginx/config.yaml -n openim
+```
+
+#### Detailed Explanation for ingress-nginx:
+
++ **controller**: Defines the main configuration for the ingress-nginx controller.
+  + `name`: Name of the controller.
+  + `image`: Specifies the image details for the ingress-nginx controller.
+  + `hostNetwork`: If set to true, the NGINX ingress controller will use the host's network namespace, allowing it to see the real client IP.
+  + `service`: Specifies the service details for exposing the ingress-nginx controller.
+  + `admissionWebhooks`: Configuration for the Kubernetes admission webhooks. The patch webhook adds the certificate volume to the ingress controller pod.
++ **defaultBackend**: It is a service that handles all traffic that the ingress controller (NGINX) cannot route to an application in the cluster. In this configuration, it's disabled.
+
+For further reading and more advanced configurations for `ingress-nginx`, you can refer to the official [ingress-nginx documentation](https://kubernetes.github.io/ingress-nginx/).
+
 ## Install Middleware
 
 Deploy required middleware services:
