@@ -171,7 +171,7 @@ Ensure domain info in `open-im-server-config.yaml`. Sync with middleware's `-con
 ## Install OpenIM Chat Service
 
 ```bash
-helm install openim-chat -f k8s-chat-server-config.yaml ./openim/openim-chat/ -n openim
+helm install openim-chat -f k8s-chat-server-config.yaml -f config-chatserver.yaml ./openim/openim-chat/ -n openim
 ```
 
 ## Install Web and Admin Frontends
