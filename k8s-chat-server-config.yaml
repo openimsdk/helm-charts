@@ -2,9 +2,10 @@
 #Currently, only the configuration with ingressName as nginx is provided.
 #If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
 image:
-  repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/admin-api
+  # registry.cn-hangzhou.aliyuncs.com/openimsdk/admin-api
+  repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/admin-api
   pullPolicy: Always
-  tag: "dev"
+  tag: "latest"
 ingress:
   enabled: true
   className: "nginx"
@@ -20,11 +21,12 @@ ingress:
     - secretName: webapitls  #your hostname tls
       hosts:
         - openim.server.com
+
 chat-api:
   image:
-    repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/chat-api
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-api
     pullPolicy: Always
-    tag: "dev"
+    tag: "latest"
   ingress:
     enabled: true
     className: "nginx"
@@ -41,19 +43,13 @@ chat-api:
         hosts:
           - openim.server.com
 
-
 admin-rpc:
   image:
-    repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/admin-rpc
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/admin-rpc
     pullPolicy: Always
-    tag: "dev"
+    tag: "latest"
 chat-rpc:
   image:
-    repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/chat-rpc
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc
     pullPolicy: Always
-    tag: "dev"
-
-
-
-
-
+    tag: "latest"

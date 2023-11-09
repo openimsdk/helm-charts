@@ -42,6 +42,7 @@ openim-msggateway:
         hosts:
           - openim.server.com
 
+# openim-msgtransfer in openim/openim-server/values.yaml not defined, Pass to openim/openim-server/openim-msgtransfer/values.yaml
 openim-msgtransfer:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msgtransfer

@@ -8,8 +8,13 @@ OpenIM Helm Charts simplify deployment and management of OpenIM instant messagin
 2. Two domain names: one for MinIO API, another for OpenIM Server API.
 3. Configured StorageClass (e.g., NFS-Client).
 4. *(Optional)* For K8s with LoadBalancer-configured Ingress Controller nodes, no need to configure TLS items in `-config.yaml` files.
+5. If you also need to open the grafana web page to view the monitoring and logging, you also need to prepare a second domain name, which can be a subdomain name. If you want to enable minio's console web access, you will also need a separate domain name, which can be a subdomain.
 
 > **Note**: The next release will feature single domain access and IP-based URL access.
+> Aliyun provides free certificate service (20), Once you've downloaded it to the server, Use:
+> `kubectl create secret tls openimtls1-secret --cert=fullchain.pem --key=privkey.pem -n openim`
+> you need to modify the `infra/prometheus-config.yaml` file to use the secret name `openimtls1-secret` and the domain name `openim.example.com` to access the openim server.
+
 
 ## Quick Start
 
@@ -158,6 +163,17 @@ helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 >
 > These configuration files include account information, for example, `minio-config.yaml` also includes domain information.
 
+<!-- 安装监控 -->
+## Install Prometheus and Grafana
+
+If you need to enable monitoring, install the kube-prometheus-stack component:
+
+```bash
+helm install im-kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometheus-config.yaml -n openim
+```
+
+> **Note**
+> To enable monitoring you need a domain name to access grafana web pages. Please change prometheus-config.yaml to your real domain name and tls name.
 
 
 ## Install OpenIM Server Service
@@ -180,3 +196,22 @@ helm install openim-chat -f k8s-chat-server-config.yaml -f config-chatserver.yam
 + **Admin**: `helm install imadminfront -f k8s-adminfront-config.yaml ./openim/adminfront/ -n openim`
 
 **Note**: Set domain details in respective `-config.yaml` files, reflecting your domain and TLS details.
+
+
+## FAQ
+
+**How to deploy multiple Kubernetes environments with namespaces**
+
+**Specifically, why are ingress-nginx, nfs, and kube-prometheus-stack using the same configuration?**
+
+**Answer:**
+
+Ingress-nginx, nfs, and kube-prometheus-stack are all core Kubernetes components that are used in many different environments. It is often more efficient to use a single configuration for these components, rather than creating separate configurations for each environment.
+
+For example, ingress-nginx is used to provide external access to services running in Kubernetes. A single ingress controller can be configured to route traffic to different services in different environments. This can save time and effort, as it eliminates the need to create and manage separate ingress controllers for each environment.
+
+Similarly, nfs is used to provide shared storage for Kubernetes pods. A single nfs server can be configured to provide storage to pods in different environments. This can improve performance and reliability, as it eliminates the need to create and manage separate nfs servers for each environment.
+
+Finally, kube-prometheus-stack is a collection of Prometheus and Grafana components that can be used to collect and monitor metrics from Kubernetes. A single kube-prometheus-stack can be configured to collect metrics from pods in different environments. This can provide a unified view of the health and performance of all Kubernetes environments.
+
+**Of course, there are some cases where it may be necessary to use separate configurations for ingress-nginx, nfs, and kube-prometheus-stack. For example, if you need to have different security or performance requirements for different environments. However, in general, using a single configuration is a good way to simplify and streamline the deployment of multiple Kubernetes environments.**
