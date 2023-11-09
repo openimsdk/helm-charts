@@ -48,7 +48,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /config/config.yaml
+            - mountPath: openim/openim-chat/config/config.yaml
               name: config
               subPath: config.yaml
       volumes:
