@@ -108,14 +108,14 @@ config:
   # minio.signEndpoint is minio public network address
   object:
     enable: "minio"
-    apiURL: "https://openim.server.com/api"
+    apiURL: "https://openim1.server.top/api"
     minio:
       bucket: "openim"
       endpoint: "http://im-minio:9000"
       accessKeyID: "root"
       secretAccessKey: "openIM123"
       sessionToken: ''
-      signEndpoint: "https://openim.server.com/im-minio-api"
+      signEndpoint: "https://openim1.server.top/im-minio-api"
     cos:
       bucketURL: https://temp-1252357374.cos.ap-chengdu.myqcloud.com
       secretID: ''
@@ -351,14 +351,16 @@ config:
   # The number of ports needs to be consistent with msg_transfer_service_num in script/path_info.sh
   prometheus:
     enable: false
-    userPrometheusPort: [ 20110 ]
-    friendPrometheusPort: [ 20120 ]
-    messagePrometheusPort: [ 20130 ]
-    messageGatewayPrometheusPort: [ 20140 ]
-    groupPrometheusPort: [ 20150 ]
-    authPrometheusPort: [ 20160 ]
-    pushPrometheusPort: [ 20170 ]
-    conversationPrometheusPort: [ 20230 ]
-    rtcPrometheusPort: [ 21300 ]
-    thirdPrometheusPort: [ 21301 ]
-    messageTransferPrometheusPort: [ 21400, 21401, 21402, 21403 ] # List of ports
+    prometheusUrl: "https://openim2.server.top/"
+    apiPrometheusPort: [ 90 ]
+    userPrometheusPort: [ 90 ]
+    friendPrometheusPort: [ 90 ]
+    messagePrometheusPort: [ 90 ]
+    messageGatewayPrometheusPort: [ 90 ]
+    groupPrometheusPort: [ 90 ]
+    authPrometheusPort: [ 90 ]
+    pushPrometheusPort: [ 90 ]
+    conversationPrometheusPort: [ 90 ]
+    rtcPrometheusPort: [ 90 ]
+    thirdPrometheusPort: [ 90 ]
+    messageTransferPrometheusPort: [ 90, 21401, 21402, 21403 ] # List of ports
