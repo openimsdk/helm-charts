@@ -13,7 +13,7 @@ OpenIM Helm Charts simplify deployment and management of OpenIM instant messagin
 > **Note**: The next release will feature single domain access and IP-based URL access.
 > Aliyun provides free certificate service (20), Once you've downloaded it to the server, Use:
 > `kubectl create secret tls openimtls1-secret --cert=fullchain.pem --key=privkey.pem -n openim`
-> you need to modify the `infra/prometheus-config.yaml` file to use the secret name `openimtls1-secret` and the domain name `openim.example.com` to access the openim server.
+> you need to modify the `infra/prometheus-config.yaml` file to use the secret name `openimtls1-secret` and the domain name `openim.example.com` to access the openim server. prometheusUrl is the url accessed by the real Prometheu.
 
 
 ## Quick Start
