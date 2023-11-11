@@ -3,7 +3,7 @@
 #If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
 image:
   # registry.cn-hangzhou.aliyuncs.com/openimsdk/admin-api
-  repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/admin-api
+  repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-api-admin
   pullPolicy: Always
   tag: "latest"
 ingress:
@@ -24,7 +24,7 @@ ingress:
 
 chat-api:
   image:
-    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-api
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-api-chat
     pullPolicy: Always
     tag: "latest"
   ingress:
@@ -45,11 +45,11 @@ chat-api:
 
 admin-rpc:
   image:
-    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/admin-rpc
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-admin
     pullPolicy: Always
     tag: "latest"
 chat-rpc:
   image:
-    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-chat
     pullPolicy: Always
     tag: "latest"
