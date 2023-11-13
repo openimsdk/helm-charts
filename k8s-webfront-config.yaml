@@ -5,7 +5,7 @@ image:
   # registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-web
   repository: ghcr.io/openimsdk/openim-web
   pullPolicy: Always
-  tag: "latest"
+  tag: "preview"
 
 ingress:
   enabled: true
