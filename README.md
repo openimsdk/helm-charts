@@ -169,7 +169,7 @@ helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 If you need to enable monitoring, install the kube-prometheus-stack component:
 
 ```bash
-helm install im-kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometheus-config.yaml -n openim
+helm install kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometheus-config.yaml -n openim
 ```
 
 > **Note**
