@@ -1,0 +1,71 @@
+name: Helm Chart Test
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install kind
+      run: |
+        curl -Lo ./kind https://kind.sigs.k8s.io/dl/latest/kind-$(uname)-amd64
+        chmod +x ./kind
+        ./kind create cluster
+
+    - name: Install kubectl
+      run: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+
+    - name: Install Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Install MySQL
+      run: helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
+
+    - name: Install Kafka
+      run: helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
+
+    - name: Install MinIO
+      run: helm install im-minio infra/minio -f infra/minio-config.yaml -n openim
+
+    - name: Install MongoDB
+      run: helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
+
+    - name: Install Redis
+      run: helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
+
+    - name: Install Prometheus and Grafana
+      run: helm install kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometheus-config.yaml -n openim
+
+    - name: Install OpenIM Server Service
+      run: helm install openimserver -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml ./openim/openim-server/ -n openim
+
+    - name: Install OpenIM Chat Service
+      run: helm install openim-chat -f k8s-chat-server-config.yaml -f config-chatserver.yaml ./openim/openim-chat/ -n openim
+
+    - name: Install Web Frontend
+      run: helm install imwebfront -f k8s-webfront-config.yaml ./openim/webfront/ -n openim
+
+    - name: Install Admin Frontend
+      run: helm install imadminfront -f k8s-adminfront-config.yaml ./openim/adminfront/ -n openim
+
+    - name: Test Installation
+      run: |
+        echo "Checking Kubernetes pods status..."
+        kubectl get pods -n openim
+        
+
+    - name: Cleanup
+      if: always()
+      run: |
+        ./kind delete cluster
