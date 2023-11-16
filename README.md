@@ -70,7 +70,7 @@ If you prefer to use the local repository for installation, follow these steps:
 
 1. Update the `config.yaml` file under the directory [infra/nfs-subdir-external-provisioner](https://github.com/openimsdk/helm-charts/tree/main/infra/nfs-subdir-external-provisioner). Modify the `image` and `nfs` values:
 
-```
+```bash
 image:
   repository: m.daocloud.io/registry.k8s.io/sig-storage/nfs-subdir-external-provisioner
 
@@ -83,7 +83,7 @@ Replace `YOUR_NFS_SERVER_IP` with your internal or public IP address and `YOUR_N
 
 1. Deploy NFS using the following Helm command:
 
-```
+```bash
 helm install nfs-subdir-external-provisioner ./infra/nfs-subdir-external-provisioner/ -f infra/nfs-subdir-external-provisioner/config.yaml -n openim
 ```
 
@@ -169,7 +169,7 @@ helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 If you need to enable monitoring, install the kube-prometheus-stack component:
 
 ```bash
-helm install im-kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometheus-config.yaml -n openim
+helm install kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometheus-config.yaml -n openim
 ```
 
 > **Note**

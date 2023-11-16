@@ -29,7 +29,6 @@ grafana:
         hosts:
           - openim2.server.top
 
-
 prometheus:
   ingress:
     enabled: false

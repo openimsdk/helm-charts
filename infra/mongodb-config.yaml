@@ -22,3 +22,10 @@ backup:
   cronjob:
     storage:
       size: 1Gi
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    labels:
+      release: kube-prometheus-stack

@@ -14,18 +14,18 @@ persistence:
 ingress:
   enabled: false
   ingressClassName: "nginx"
-  hostname: openim.minio.console # your hostname for minioconsole
+  hostname: openim.minio.console # TODO: your hostname for minioconsole
   path: /
   servicePort: minio-console
   extraTls:
     - hosts:
         - openim.minio.console
-      secretName: openim2tls  #your hostname tls
+      secretName: openim2tls  # TODO: your hostname tls
 
 apiIngress:
   enabled: true
   ingressClassName: "nginx"
-  hostname: openim.server.com # your hostname
+  hostname: openim1.server.top # TODO: Fix this
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 50m
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -35,5 +35,11 @@ apiIngress:
   servicePort: minio-api
   extraTls:
     - hosts:
-        - openim.server.com
-      secretName: webapitls  #your hostname tls
+        - openim1.server.top
+      secretName: webapitls  # TODO: your hostname tls
+
+metrics:
+  serviceMonitor:
+    enabled: false
+    labels:
+      release: kube-prometheus-stack
