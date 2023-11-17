@@ -13,3 +13,10 @@ replica:
   replicaCount: 1
   persistence:
     size: 1Gi
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    additionalLabels:
+      release: kube-prometheus-stack

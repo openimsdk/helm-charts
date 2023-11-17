@@ -15,5 +15,9 @@ spec:
       targetPort: rpc
       protocol: TCP
       name: rpc
+    - port: 90
+      targetPort: 90
+      protocol: TCP
+      name: metrics-port
   selector:
     {{- include "openim-msggateway.selectorLabels" . | nindent 4 }}

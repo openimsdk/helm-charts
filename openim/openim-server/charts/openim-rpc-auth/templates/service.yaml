@@ -11,5 +11,9 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 90
+      targetPort: 90
+      protocol: TCP
+      name: metrics-port
   selector:
     {{- include "openim-rpc-auth.selectorLabels" . | nindent 4 }}
