@@ -1,3 +1,8 @@
+#The global Prometheus monitoring switch. If set to true, a ServiceMonitor will be created for each service.
+#If set to false, a ServiceMonitor will not be created, and the monitoring function of the service will not be available
+global:
+  monitor:
+    enabled: false
 #This configuration file is used to override the use of the value.yaml variable.
 #Currently, only the configuration with ingressName as nginx is provided.
 #If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
