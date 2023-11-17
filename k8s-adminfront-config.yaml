@@ -14,11 +14,11 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: openim.server.com # your hostname
+    - host: openim1.server.top # your hostname
       paths:
         - path: /openim-admin-front(/|$)(.*)
           pathType: ImplementationSpecific
   tls:
     - secretName: webapitls  #your hostname tls
       hosts:
-        - openim.server.com
+        - openim1.server.top

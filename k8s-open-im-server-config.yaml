@@ -12,14 +12,14 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: openim.server.com # your hostname
+    - host: openim1.server.top # your hostname
       paths:
         - path: /api(/|$)(.*)
           pathType: ImplementationSpecific
   tls:
     - secretName: webapitls  #your hostname tls
       hosts:
-        - openim.server.com
+        - openim1.server.top
 
 openim-msggateway:
   image:
@@ -33,14 +33,14 @@ openim-msggateway:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
-      - host: openim.server.com # your hostname
+      - host: openim1.server.top # your hostname
         paths:
           - path: /msg_gateway(/|$)(.*)
             pathType: ImplementationSpecific
     tls:
       - secretName: webapitls  #your hostname tls
         hosts:
-          - openim.server.com
+          - openim1.server.top
 
 # openim-msgtransfer in openim/openim-server/values.yaml not defined, Pass to openim/openim-server/openim-msgtransfer/values.yaml
 openim-msgtransfer:
