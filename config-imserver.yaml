@@ -1,3 +1,8 @@
+#The global Prometheus monitoring switch. If set to true, all openim_servers ServiceMonitor will be created for each service.
+#If set to false, openim_servers ServiceMonitor will not be created, and the monitoring function of the service will not be available
+global:
+  monitor:
+    enabled: false
 
 config:
   envs:
@@ -363,4 +368,4 @@ config:
     conversationPrometheusPort: [ 90 ]
     rtcPrometheusPort: [ 90 ]
     thirdPrometheusPort: [ 90 ]
-    messageTransferPrometheusPort: [ 90, 21401, 21402, 21403 ] # List of ports
+    messageTransferPrometheusPort: [ 90, 90, 90, 90 ] # List of ports

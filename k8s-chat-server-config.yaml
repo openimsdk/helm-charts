@@ -13,14 +13,14 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: openim.server.com
+    - host: openim1.server.top
       paths:
         - path: /complete_admin(/|$)(.*)
           pathType: ImplementationSpecific
   tls:
     - secretName: webapitls  #your hostname tls
       hosts:
-        - openim.server.com
+        - openim1.server.top
 
 chat-api:
   image:
@@ -34,14 +34,14 @@ chat-api:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
-      - host: openim.server.com
+      - host: openim1.server.top
         paths:
           - path: /chat(/|$)(.*)
             pathType: ImplementationSpecific
     tls:
       - secretName: webapitls  #your hostname tls
         hosts:
-          - openim.server.com
+          - openim1.server.top
 
 admin-rpc:
   image:

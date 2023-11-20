@@ -1,3 +1,8 @@
+#The global Prometheus monitoring switch. If set to true, a ServiceMonitor will be created for each service.
+#If set to false, a ServiceMonitor will not be created, and the monitoring function of the service will not be available
+global:
+  monitor:
+    enabled: false
 #This configuration file is used to override the use of the value.yaml variable.
 #Currently, only the configuration with ingressName as nginx is provided.
 #If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
@@ -12,14 +17,14 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: openim.server.com # your hostname
+    - host: openim1.server.top # your hostname
       paths:
         - path: /api(/|$)(.*)
           pathType: ImplementationSpecific
   tls:
     - secretName: webapitls  #your hostname tls
       hosts:
-        - openim.server.com
+        - openim1.server.top
 
 openim-msggateway:
   image:
@@ -33,14 +38,14 @@ openim-msggateway:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
-      - host: openim.server.com # your hostname
+      - host: openim1.server.top # your hostname
         paths:
           - path: /msg_gateway(/|$)(.*)
             pathType: ImplementationSpecific
     tls:
       - secretName: webapitls  #your hostname tls
         hosts:
-          - openim.server.com
+          - openim1.server.top
 
 # openim-msgtransfer in openim/openim-server/values.yaml not defined, Pass to openim/openim-server/openim-msgtransfer/values.yaml
 openim-msgtransfer:
