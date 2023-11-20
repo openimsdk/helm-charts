@@ -1,5 +1,42 @@
 
 alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+      smtp_from: 'openimalert@163.com'
+      smtp_smarthost: 'smtp.163.com:465'
+      smtp_auth_username: 'openimalert@163.com'
+      smtp_auth_password: 'ISJIOUYPVOGMDEFJ'
+      smtp_require_tls: false
+      smtp_hello: 'openim-server监控告警'
+    route:
+      group_by: [ 'alertname' ]
+      group_wait: 5s
+      group_interval: 5s
+      repeat_interval: 5m
+      receiver: 'email'
+    receivers:
+      - name: 'email'
+        email_configs:
+          - to: '2393740379@qq.com'
+            headers: { Subject: "[WARN]告警" }
+            html: '{{ template "email1" . }}'
+            send_resolved: true
+  templateFiles:
+    template_1.tmpl: |-
+        {{ define "email1" }}
+        {{ range .Alerts }}
+           -------------------------------<br>
+           告警程序: prometheus_alert<br>
+           告警级别: {{ .Labels.severity }} 级<br>
+           告警类型: {{ .Labels.alertname }}<br>
+           故障主机: {{ .Labels.instance }}<br>
+           故障服务: {{ .Labels.job }}<br>
+           告警主题: {{ .Annotations.summary }}<br>
+           触发时间: {{ .StartsAt.Format "2020-01-02 15:04:05"}} <br>
+           ---------------------------------<br>
+        {{ end }}
+        {{ end }}
   ingress:
     enabled: false
     ingressClassName: nginx
