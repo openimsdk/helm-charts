@@ -175,15 +175,17 @@ helm install kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometh
 > **Note**
 > To enable monitoring you need a domain name to access grafana web pages. Please change prometheus-config.yaml to your real domain name and tls name.
 > if you want prometheus pull openim-server metrics ,you need to set the two following enable: true of config-imserver.yaml
-> 
 > global:
 >   monitor:
 >     enabled: true
-> 
 > config:
 >   prometheus:
 >      enable: true
-
+>
+> **Note**
+> Your prometheus-config.yaml file is configured with a feature to send alerts via email. 
+> You just need to update it with your actual smtp_from, smtp_auth_username, smtp_auth_password, and email_configs field information.
+> 
 ## Install loki and promtail
 
 If you need to enable loki, install the loki-stack component:
