@@ -1,4 +1,18 @@
 
+additionalPrometheusRulesMap:
+  redis-mongodb-crash:
+    groups:
+      - name: database_insert_failure_alerts
+        rules:
+          - alert: DatabaseInsertFailed
+            expr: increase(MsgInsertRedisFailedCounter[5m]) > 0 or increase(MsgInsertMongoFailedCounter[5m]) > 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Increase in MsgInsertRedisFailedCounter or MsgInsertMongoFailedCounter detected"
+              description: "Either MsgInsertRedisFailedCounter or MsgInsertMongoFailedCounter has increased in the last 5 minutes, indicating failures in message insert operations to Redis or MongoDB,maybe the redis or mongodb is crash."
+
 alertmanager:
   config:
     global:
