@@ -5,7 +5,7 @@ additionalPrometheusRulesMap:
       - name: database_insert_failure_alerts
         rules:
           - alert: DatabaseInsertFailed
-            expr: increase(MsgInsertRedisFailedCounter[5m]) > 0 or increase(MsgInsertMongoFailedCounter[5m]) > 0
+            expr: (increase(MsgInsertRedisFailedCounter{job="openimserver-openim-transfer"}[5m]) > 0) or (increase(MsgInsertMongoFailedCounter{job="openimserver-openim-transfer"}[5m]) > 0)
             for: 1m
             labels:
               severity: critical
