@@ -3,6 +3,7 @@
 global:
   # this is your storageClass,Please change in according to the k8s environment settings of your server
   storageClass: "nfs-client"
+  imageRegistry: "m.daocloud.io/docker.io/bitnami/minio:2023.9.20-debian-11-r0"
 mode: standalone
 auth:
   rootUser: root
