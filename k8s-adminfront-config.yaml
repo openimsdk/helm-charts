@@ -3,7 +3,7 @@
 #If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
 image:
   # registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-admin-front
-  repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-admin-front
+  repository: ghcr.io/openimsdk/openim-admin-front
   pullPolicy: Always
   tag: "latest"
 
