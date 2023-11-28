@@ -4,6 +4,7 @@
 global:
   # this is your storageClass,Please change in according to the k8s environment settings of your server
   storageClass: "nfs-client"
+  imageRegistry: "m.daocloud.io/docker.io"
 controller:
   replicaCount: 3
 sasl:

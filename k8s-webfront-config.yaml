@@ -3,9 +3,9 @@
 #If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
 image:
   # registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-web
-  repository: ghcr.io/openimsdk/openim-web
+  repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-web
   pullPolicy: Always
-  tag: "preview"
+  tag: "preview-k8s"
 
 ingress:
   enabled: true

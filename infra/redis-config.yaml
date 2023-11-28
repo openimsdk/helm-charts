@@ -1,6 +1,7 @@
 #This configuration file is used to override the use of the value. yaml variable. You can modify it according to your own needs.
 #If you modify the account information inside, it may need to be synchronized in the application file
 global:
+  imageRegistry: "m.daocloud.io/docker.io"
   # this is your storageClass,Please change in according to the k8s environment settings of your server
   storageClass: "nfs-client"
   redis:
