@@ -3,7 +3,7 @@
 global:
   # this is your storageClass,Please change in according to the k8s environment settings of your server
   storageClass: "nfs-client"
-  imageRegistry: "m.daocloud.io/docker.io/bitnami/mysql:8.0.34-debian-11-r56"
+  imageRegistry: "m.daocloud.io/docker.io"
 auth:
   rootPassword: "openIM123"
   createDatabase: true
