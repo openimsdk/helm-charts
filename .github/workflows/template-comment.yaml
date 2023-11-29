@@ -23,10 +23,7 @@ jobs:
         helm_output=$(helm template ./openim/openim-server -f k8s-open-im-server-config.yaml -f config-imserver.yaml)
         echo "::set-output name=helm_output::$helm_output"
 
-    - name: Install GitHub CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install gh
-
     - name: Post comment with Helm output
       run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.helm_template.outputs.helm_output }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
