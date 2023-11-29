@@ -27,3 +27,4 @@ jobs:
       run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.helm_template.outputs.helm_output }}"
       env:
         GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        GH_TOKEN: ${{ github.token }}
