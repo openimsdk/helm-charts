@@ -16,3 +16,4 @@ jobs:
         with:
           tfsec_args: --soft-fail
           github_token: ${{ secrets.BOT_GITHUB_TOKEN }}
+        continue-on-error: true
