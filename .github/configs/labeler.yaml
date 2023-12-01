@@ -1,0 +1,11 @@
+openim-server:
+  - charts/openim-server/**/*
+
+openim-chat:
+  - charts/openim-chat/**/*
+
+openim-admin:
+  - charts/openim-admin/**/*
+
+openim-web:
+  - charts/openim-web/**/*

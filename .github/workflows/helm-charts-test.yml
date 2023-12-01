@@ -59,10 +59,10 @@ jobs:
         helm install openimchat ./openim-chat/ -f k8s-chat-server-config.yaml -f config-chatserver.yaml -n openim
 
         # Web Frontend 安装
-        helm install imwebfront ./webfront/ -f k8s-webfront-config.yaml -n openim
+        helm install imwebfront ./openim-web/ -f k8s-webfront-config.yaml -n openim
 
         # Admin Frontend 安装
-        helm install imadminfront ./adminfront/ -f k8s-adminfront-config.yaml -n openim
+        helm install imadminfront ./openim-admin/ -f k8s-adminfront-config.yaml -n openim
 
     - name: Test Installation
       run: |

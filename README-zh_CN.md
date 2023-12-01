@@ -52,9 +52,9 @@ helm list
 
 ## 目录结构
 
-### adminfront
+### openim-admin
 
-这个目录包含了 "adminfront" 服务的 Helm Chart。
+这个目录包含了 "openim-admin" 服务的 Helm Chart。
 
 + `Chart.yaml`: 包含了 Chart 的基本信息和版本。
 + `templates/`: 包含了 Kubernetes 模板文件。
@@ -62,7 +62,7 @@ helm list
 
 ### adminfront-config.yaml
 
-包含了 "adminfront" 服务的自定义配置信息。
+包含了 "openim-admin" 服务的自定义配置信息。
 
 ### chat-server
 
@@ -132,7 +132,7 @@ helm install openim-chat -f chat-server-config.yaml ./openim-chat
 ## 安装 Webfront
 
 ```bash
-helm install imwebfront -f webfront-config.yaml ./webfront/
+helm install imwebfront -f webfront-config.yaml ./openim-web/
 ```
 
 请确保在 `webfront-config.yaml` 中配置了域名信息。
@@ -141,7 +141,7 @@ helm install imwebfront -f webfront-config.yaml ./webfront/
 ## 安装 Adminfront
 
 ```bash
-helm install imadminfront -f adminfront-config.yaml ./adminfront/
+helm install imadminfront -f adminfront-config.yaml ./openim-admin/
 ```
 
 请确保在 `adminfront-config.yaml` 中配置了域名信息。

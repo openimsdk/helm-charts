@@ -44,8 +44,8 @@ OpenIM Helm Charts simplify deployment and management of OpenIM instant messagin
 
 ## Directory Structure
 
-+ **adminfront**: Helm Chart for "adminfront" service with `Chart.yaml`, `templates/`, and `values.yaml`.
-+ **adminfront-config.yaml**: Configuration for "adminfront".
++ **openim-admin**: Helm Chart for "openim-admin" service with `Chart.yaml`, `templates/`, and `values.yaml`.
++ **adminfront-config.yaml**: Configuration for "openim-admin".
 + **chat-server**: Helm Chart for "chat-server" with associated files.
 + **infra**: Contains Helm Charts/configurations for middleware OpenIM relies on.
 
@@ -214,8 +214,8 @@ helm install openimchat -f k8s-chat-server-config.yaml -f config-chatserver.yaml
 
 ## Install Web and Admin Frontends
 
-+ **Web**: `helm install imwebfront -f k8s-webfront-config.yaml ./charts/webfront/ -n openim`
-+ **Admin**: `helm install imadminfront -f k8s-adminfront-config.yaml ./charts/adminfront/ -n openim`
++ **Web**: `helm install imwebfront -f k8s-webfront-config.yaml ./charts/openim-web/ -n openim`
++ **Admin**: `helm install imadminfront -f k8s-adminfront-config.yaml ./charts/openim-admin/ -n openim`
 
 **Note**: Set domain details in respective `-config.yaml` files, reflecting your domain and TLS details.
 
