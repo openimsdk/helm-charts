@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "admin-api.fullname" . }}
+  name: {{ include "chat-rpc.fullname" . }}
   labels:
-    {{- include "admin-api.labels" . | nindent 4 }}
+    {{- include "chat-rpc.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "admin-api.selectorLabels" . | nindent 6 }}
+      {{- include "chat-rpc.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "admin-api.selectorLabels" . | nindent 8 }}
+        {{- include "chat-rpc.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "admin-api.serviceAccountName" . }}
+      serviceAccountName: {{ include "chat-rpc.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -48,7 +48,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: openim/openim-chat/config/config.yaml
+            - mountPath: /openim/openim-chat/config/config.yaml
               name: config
               subPath: config.yaml
       volumes:
