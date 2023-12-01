@@ -13,8 +13,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Set up Kubernetes-in-Docker (kind)
-      uses: helm/kind-action@v1.5.0
+    - uses: engineerd/setup-kind@v0.5.0
+    - name: Testing
+      run: |
+        kubectl cluster-info
+        kubectl get pods -n kube-system
+        echo "current-context:" $(kubectl config current-context)
+        echo "environment-kubeconfig:" ${KUBECONFIG}
 
     - name: Install Helm
       uses: azure/setup-helm@v3
