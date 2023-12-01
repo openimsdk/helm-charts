@@ -33,6 +33,7 @@ jobs:
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0
+        continue-on-error: true
 
       - name: Run chart-testing (list-changed)
         id: list-changed
