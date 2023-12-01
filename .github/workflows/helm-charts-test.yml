@@ -11,15 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Kubernetes-in-Docker (kind)
-      uses: helm/kind-action@v1.1.0
+      uses: helm/kind-action@v1.5.0
 
     - name: Install Helm
-      uses: azure/setup-helm@v1
+      uses: azure/setup-helm@v3
       with:
         version: '3.x'
+      id: install
 
     - name: Create Kubernetes Cluster
       run: |
