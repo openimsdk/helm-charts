@@ -1,6 +1,6 @@
 apiVersion: v2
 name: openim-web
-description: A Helm chart for Kubernetes
+description: Openim-web is the front-end web chat of openim
 
 # A chart can be either an 'application' or a 'library' chart.
 #

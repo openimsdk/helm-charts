@@ -45,7 +45,7 @@ jobs:
     - name: Install OpenIM Middleware
       run: |
         # Install MySQL
-        helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim --create-namespace
+        helm install my-release oci://registry-1.docker.io/bitnamicharts/mysql -f infra/mysql-config.yaml -n openim --create-namespace
 
         # Install Kafka
         helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim --create-namespace

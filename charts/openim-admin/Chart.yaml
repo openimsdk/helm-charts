@@ -1,6 +1,6 @@
 apiVersion: v2
 name: openim-admin
-description: A Helm chart for Kubernetes
+description: Openim-admin is the administrative backend for openim
 
 # A chart can be either an 'application' or a 'library' chart.
 #
