@@ -30,9 +30,9 @@ jobs:
 
     - name: Create Kubernetes Cluster
       run: |
-        sudo kind create cluster
-        sudo kubectl cluster-info
-        sudo kubectl create namespace openim
+        kind create cluster
+        kubectl cluster-info
+        kubectl create namespace openim
 
     - name: Install basic components
       run: |
@@ -76,7 +76,8 @@ jobs:
 
     - name: Test Installation
       run: |
-        sudo kubectl get pods -n openim
+        kubectl get pod -A
+        kubectl get pods -n openim
 
     - name: Cleanup
       if: always()
