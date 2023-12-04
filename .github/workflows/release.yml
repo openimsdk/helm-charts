@@ -36,7 +36,7 @@ jobs:
     #     run: |
     #       helm repo add bitnami https://charts.bitnami.com/bitnami
     #       helm repo add grafana https://grafana.github.io/helm-charts
-    #       helm repo add openim https://prometheus-community.github.io/helm-charts
+    #       helm repo add openim https://openim.github.io/helm-charts
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
