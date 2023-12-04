@@ -1,6 +1,6 @@
 apiVersion: v2
 name: openim-api
-description: A Helm chart for Kubernetes
+description: OpenIM is an open source instant messaging server based on the open source framework of the open source instant messaging SDK.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
