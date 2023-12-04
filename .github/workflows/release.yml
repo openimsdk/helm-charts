@@ -39,7 +39,7 @@ jobs:
     #       helm repo add openim https://openim.github.io/helm-charts
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.5.0
+        uses: helm/chart-releaser-action@v1.6.0
         with:
             charts_dir: charts
             # version: The chart-releaser version to use (default: v1.6.0)
