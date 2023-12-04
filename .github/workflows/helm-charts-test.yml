@@ -24,10 +24,9 @@ jobs:
       continue-on-error: true
 
     - name: Install Helm
-      uses: azure/setup-helm@v3
+      uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
       with:
-        version: '3.x'
-      id: install
+        version: v3.10.1 # Also update in lint-and-test.yaml
 
     - name: Create Kubernetes Cluster
       run: |
