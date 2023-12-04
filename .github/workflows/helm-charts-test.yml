@@ -37,16 +37,16 @@ jobs:
     - name: Install OpenIM Middleware
       run: |
         # Install MySQL
-        helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
+        helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim --create-namespace
 
         # Install Kafka
-        helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
+        helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim --create-namespace
 
         # Install MinIO
-        helm install im-minio infra/minio -f infra/minio-config.yaml -n openim
+        helm install im-minio infra/minio -f infra/minio-config.yaml -n openim --create-namespace
 
         # Install MongoDB
-        helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
+        helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim --create-namespace
 
         # Install Redis
         helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
