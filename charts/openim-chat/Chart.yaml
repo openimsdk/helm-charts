@@ -1,6 +1,6 @@
 apiVersion: v2
 name: admin-api
-description: A Helm chart for Kubernetes
+description: OpenIM chat is an open source openim's business server
 
 # A chart can be either an 'application' or a 'library' chart.
 #
