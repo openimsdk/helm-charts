@@ -32,6 +32,7 @@ jobs:
       run: |
         sudo kind create cluster
         sudo kubectl cluster-info
+        sudo kubectl create namespaces openim
 
     - name: Install OpenIM Middleware
       run: |
