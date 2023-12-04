@@ -35,7 +35,7 @@ OpenIM Helm Charts simplify deployment and management of OpenIM instant messagin
 
 ## Commands Overview
 
-+ **Install**: `helm install [RELEASE_NAME] openim/openim-server`
++ **Install**: `helm install [RELEASE_NAME] charts/openim-server`
 + **Uninstall**: `helm uninstall [RELEASE_NAME]`
 + **Upgrade**: `helm upgrade [RELEASE_NAME] [CHART] --install`
 + **List Releases**: `helm list`
@@ -44,8 +44,8 @@ OpenIM Helm Charts simplify deployment and management of OpenIM instant messagin
 
 ## Directory Structure
 
-+ **adminfront**: Helm Chart for "adminfront" service with `Chart.yaml`, `templates/`, and `values.yaml`.
-+ **adminfront-config.yaml**: Configuration for "adminfront".
++ **openim-admin**: Helm Chart for "openim-admin" service with `Chart.yaml`, `templates/`, and `values.yaml`.
++ **adminfront-config.yaml**: Configuration for "openim-admin".
 + **chat-server**: Helm Chart for "chat-server" with associated files.
 + **infra**: Contains Helm Charts/configurations for middleware OpenIM relies on.
 
@@ -201,7 +201,7 @@ helm install loki-stack infra/loki-stack/ -n openim
 ## Install OpenIM Server Service
 
 ```bash
-helm install openimserver -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml  ./openim/openim-server/ -n openim
+helm install openimserver -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml  ./charts/openim-server/ -n openim
 ```
 
 Ensure domain info in `open-im-server-config.yaml`. Sync with middleware's `-config.yaml` if changes were made during its setup.
@@ -209,13 +209,13 @@ Ensure domain info in `open-im-server-config.yaml`. Sync with middleware's `-con
 ## Install OpenIM Chat Service
 
 ```bash
-helm install openimchat -f k8s-chat-server-config.yaml -f config-chatserver.yaml ./openim/openim-chat/ -n openim
+helm install openimchat -f k8s-chat-server-config.yaml -f config-chatserver.yaml ./charts/openim-chat/ -n openim
 ```
 
 ## Install Web and Admin Frontends
 
-+ **Web**: `helm install imwebfront -f k8s-webfront-config.yaml ./openim/webfront/ -n openim`
-+ **Admin**: `helm install imadminfront -f k8s-adminfront-config.yaml ./openim/adminfront/ -n openim`
++ **Web**: `helm install imwebfront -f k8s-webfront-config.yaml ./charts/openim-web/ -n openim`
++ **Admin**: `helm install imadminfront -f k8s-adminfront-config.yaml ./charts/openim-admin/ -n openim`
 
 **Note**: Set domain details in respective `-config.yaml` files, reflecting your domain and TLS details.
 

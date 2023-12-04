@@ -1,0 +1,37 @@
+## Reference: https://github.com/amannn/action-semantic-pull-request
+name: "Lint PR"
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  main:
+    permissions:
+      pull-requests: read  # for amannn/action-semantic-pull-request to analyze PRs
+      statuses: write  # for amannn/action-semantic-pull-request to mark status of analyzed PR
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@e9fabac35e210fea40ca5b14c0da95a099eff26f # v5.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Configure which scopes are allowed.
+          scopes: |
+            openim-server
+            openim-chat
+            openim-web
+            openim-admin
+            mongodb
+            mysql
+            deps
+            github
+          # Configure that a scope must always be provided.
+          requireScope: true

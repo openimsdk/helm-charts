@@ -1,0 +1,31 @@
+name: Helm Template Comment
+
+on:
+  pull_request:
+  pull_request_target:
+
+jobs:
+  helm-template-comment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Install Helm
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+
+    - name: Run Helm Template
+      id: helm_template
+      run: |
+        helm_output=$(helm template ./charts/openim-server -f k8s-open-im-server-config.yaml -f config-imserver.yaml)
+        echo "::set-output name=helm_output::$helm_output"
+
+    - name: Post comment with Helm output
+      run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.helm_template.outputs.helm_output }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        GH_TOKEN: ${{ github.token }}
+      continue-on-error: true

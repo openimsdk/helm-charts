@@ -48,6 +48,7 @@ admin-rpc:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-admin
     pullPolicy: Always
     tag: "latest"
+
 chat-rpc:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-chat

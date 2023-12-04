@@ -19,10 +19,10 @@ helm repo add openim https://openim.github.io/helm-charts
 ### 安装 Chart
 
 ```bash
-helm install [RELEASE_NAME] openim/openim-server
+helm install [RELEASE_NAME] openim-server
 ```
 
-*查看下面的[配置](https://github.com/openim/helm-charts/tree/main/charts/)信息。*
+*查看下面的[配置](https://github.com/helm-charts/tree/main/charts/)信息。*
 
 *有关命令文档，请参考 [helm install](https://helm.sh/docs/helm/helm_install/)。*
 
@@ -52,9 +52,9 @@ helm list
 
 ## 目录结构
 
-### adminfront
+### openim-admin
 
-这个目录包含了 "adminfront" 服务的 Helm Chart。
+这个目录包含了 "openim-admin" 服务的 Helm Chart。
 
 + `Chart.yaml`: 包含了 Chart 的基本信息和版本。
 + `templates/`: 包含了 Kubernetes 模板文件。
@@ -62,7 +62,7 @@ helm list
 
 ### adminfront-config.yaml
 
-包含了 "adminfront" 服务的自定义配置信息。
+包含了 "openim-admin" 服务的自定义配置信息。
 
 ### chat-server
 
@@ -116,7 +116,7 @@ helm install openim-redis infra/redis -f infra/redis-config.yaml
 ## 安装 OpenIM Server 服务
 
 ```bash
-helm install openim-server -f open-im-server-config.yaml -f notification.yaml ./openim/open-im-server/
+helm install openim-server -f open-im-server-config.yaml -f notification.yaml ./open-im-server/
 ```
 
 请确保在 `open-im-server-config.yaml` 中配置域名信息。账户信息默认与中间件（infra/）的 `-config.yaml` 文件同步。如果在安装中间件时修改了 `config.yaml`，请同步修改 `open-im-server-config.yaml`。
@@ -124,7 +124,7 @@ helm install openim-server -f open-im-server-config.yaml -f notification.yaml ./
 ## 安装 OpenIM Chat 服务
 
 ```bash
-helm install openim-chat -f chat-server-config.yaml ./openim/openim-chat
+helm install openim-chat -f chat-server-config.yaml ./openim-chat
 ```
 
 请确保在 `chat-server-config.yaml` 中配置域名信息。账户信息默认与中间件的 `-config.yaml` 文件同步。如果在安装中间件时修改了 `config.yaml`，请同步修改 `chat-server-config.yaml`。
@@ -132,7 +132,7 @@ helm install openim-chat -f chat-server-config.yaml ./openim/openim-chat
 ## 安装 Webfront
 
 ```bash
-helm install imwebfront -f webfront-config.yaml ./openim/webfront/
+helm install imwebfront -f webfront-config.yaml ./openim-web/
 ```
 
 请确保在 `webfront-config.yaml` 中配置了域名信息。
@@ -141,7 +141,7 @@ helm install imwebfront -f webfront-config.yaml ./openim/webfront/
 ## 安装 Adminfront
 
 ```bash
-helm install imadminfront -f adminfront-config.yaml ./openim/adminfront/
+helm install imadminfront -f adminfront-config.yaml ./openim-admin/
 ```
 
 请确保在 `adminfront-config.yaml` 中配置了域名信息。

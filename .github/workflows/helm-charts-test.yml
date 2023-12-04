@@ -1,0 +1,75 @@
+name: Helm Charts CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - uses: engineerd/setup-kind@v0.5.0
+    - name: Testing
+      run: |
+        sudo kubectl cluster-info
+        sudo kubectl get pods -n kube-system
+        echo "current-context:" $(kubectl config current-context)
+        echo "environment-kubeconfig:" ${KUBECONFIG}
+      continue-on-error: true
+
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: '3.x'
+      id: install
+
+    - name: Create Kubernetes Cluster
+      run: |
+        sudo kind create cluster
+        sudo kubectl cluster-info
+
+    - name: Install OpenIM Middleware
+      run: |
+        # Install MySQL
+        helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
+
+        # Install Kafka
+        helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
+
+        # Install MinIO
+        helm install im-minio infra/minio -f infra/minio-config.yaml -n openim
+
+        # Install MongoDB
+        helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
+
+        # Install Redis
+        helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
+
+    - name: Install OpenIM Services
+      run: |
+        # OpenIM Server Service 安装
+        helm install openimserver ./openim-server/ -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml -n openim
+
+        # OpenIM Chat Service 安装
+        helm install openimchat ./openim-chat/ -f k8s-chat-server-config.yaml -f config-chatserver.yaml -n openim
+
+        # Web Frontend 安装
+        helm install imwebfront ./openim-web/ -f k8s-webfront-config.yaml -n openim
+
+        # Admin Frontend 安装
+        helm install imadminfront ./openim-admin/ -f k8s-adminfront-config.yaml -n openim
+
+    - name: Test Installation
+      run: |
+        # 这里添加一些基本的测试命令，例如检查 Pod 状态
+        sudo kubectl get pods -n openim
+
+    - name: Cleanup
+      if: always()
+      run: |
+        kind delete cluster
