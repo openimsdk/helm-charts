@@ -63,16 +63,16 @@ jobs:
     - name: Install OpenIM Services
       run: |
         # OpenIM Server Service 安装
-        helm install openimserver ./openim-server/ -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml -n openim
+        helm install openimserver ./charts/openim-server/ -f k8s-open-im-server-config.yaml -f config-imserver.yaml -f notification.yaml -n openim
 
         # OpenIM Chat Service 安装
-        helm install openimchat ./openim-chat/ -f k8s-chat-server-config.yaml -f config-chatserver.yaml -n openim
+        helm install openimchat ./charts/openim-chat/ -f k8s-chat-server-config.yaml -f config-chatserver.yaml -n openim
 
         # Web Frontend 安装
-        helm install imwebfront ./openim-web/ -f k8s-webfront-config.yaml -n openim
+        helm install imwebfront ./charts/openim-web/ -f k8s-webfront-config.yaml -n openim
 
         # Admin Frontend 安装
-        helm install imadminfront ./openim-admin/ -f k8s-adminfront-config.yaml -n openim
+        helm install imadminfront ./charts/openim-admin/ -f k8s-adminfront-config.yaml -n openim
 
     - name: Test Installation
       run: |
