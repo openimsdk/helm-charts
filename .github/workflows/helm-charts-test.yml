@@ -13,7 +13,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - uses: engineerd/setup-kind@v0.5.0
+    - name: Create k8s Kind Cluster
+      uses: helm/kind-action@v1.5.0
     - name: Testing
       run: |
         sudo kubectl cluster-info
@@ -23,32 +24,40 @@ jobs:
       continue-on-error: true
 
     - name: Install Helm
-      uses: azure/setup-helm@v3
+      uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
       with:
-        version: '3.x'
-      id: install
+        version: v3.10.1 # Also update in lint-and-test.yaml
 
     - name: Create Kubernetes Cluster
       run: |
         sudo kind create cluster
         sudo kubectl cluster-info
+        sudo kubectl create namespace openim
+
+    - name: Install basic components
+      run: |
+        # ingress
+        helm install ingress-nginx ./infra/ingress-nginx/ -f infra/ingress-nginx/config.yaml -n kube-system
+
+        # nfs
+        helm install nfs-subdir-external-provisioner ./infra/nfs-subdir-external-provisioner/ -f infra/nfs-subdir-external-provisioner/config.yaml -n kube-system
 
     - name: Install OpenIM Middleware
       run: |
         # Install MySQL
-        helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
+        helm install my-release oci://registry-1.docker.io/bitnamicharts/mysql -f infra/mysql-config.yaml -n openim --create-namespace
 
         # Install Kafka
-        helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
+        helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim --create-namespace
 
         # Install MinIO
-        helm install im-minio infra/minio -f infra/minio-config.yaml -n openim
+        helm install im-minio infra/minio -f infra/minio-config.yaml -n openim --create-namespace
 
         # Install MongoDB
-        helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
+        helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim --create-namespace
 
         # Install Redis
-        helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
+        helm install im-redis infra/redis -f infra/redis-config.yaml -n openim --create-namespace
 
     - name: Install OpenIM Services
       run: |
@@ -66,7 +75,6 @@ jobs:
 
     - name: Test Installation
       run: |
-        # 这里添加一些基本的测试命令，例如检查 Pod 状态
         sudo kubectl get pods -n openim
 
     - name: Cleanup

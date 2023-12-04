@@ -1,0 +1,71 @@
+# OpenIM-Admin Helm Chart
+
+## Introduction
+
+This chart bootstraps an OpenIM-Admin deployment on a Kubernetes cluster using the Helm package manager.
+
+OpenIM-Admin is the administrative backend for OpenIM, providing an interface for managing the OpenIM infrastructure.
+
+## Prerequisites
+
+- Kubernetes 1.12+
+- Helm 3.0+
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```bash
+helm repo add openim https://github.com/openimsdk/helm-charts
+helm install my-release openim/openim-admin
+```
+
+{{ template "chart.sourcesList" . }}
+
+This command deploys OpenIM-Admin on the Kubernetes cluster in the default configuration. The [Parameters](https://chat.openai.com/c/892a8ceb-729a-496a-829b-98d2d1b74cc3#parameters) section lists the parameters that can be configured during installation.
+
+## Uninstalling the Chart
+
+To uninstall/delete the `my-release` deployment:
+
+```bash
+helm delete my-release
+```
+
+This command removes all the Kubernetes components associated with the chart and deletes the release.
+
+## Parameters
+
+The following table lists the configurable parameters of the OpenIM-Admin chart and their default values.
+
+| Parameter          | Description       | Default        |
+| ------------------ | ----------------- | -------------- |
+| `image.repository` | Image repository  | `nil`          |
+| `image.tag`        | Image tag         | `nil`          |
+| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
+| ...                | ...               | ...            |
+
+## Configuration
+
+Refer to [values.yaml](https://github.com/openimsdk/helm-charts/blob/main/charts/openim-admin/values.yaml) for the full run-down on defaults. These are YAML files that supply values to your templates.
+
+## Upgrading
+
+To upgrade the chart:
+
+```bash
+helm upgrade my-release openim/openim-admin
+```
+
+## Additional Information
+
++ Learn more about OpenIM: [OpenIM GitHub](https://github.com/openimsdk)
++ Source code for OpenIM Server: [OpenIM Server GitHub](https://github.com/openimsdk/open-im-server)
+
+## Maintainers
+
++ [OpenIM](https://github.com/openimsdk)
+
+## License
+
+This project is licensed under the [Apache License 2.0](https://github.com/openimsdk/open-im-server/blob/main/LICENSE).
