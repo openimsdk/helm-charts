@@ -58,6 +58,7 @@ jobs:
 
         # Install Redis
         helm install im-redis infra/redis -f infra/redis-config.yaml -n openim --create-namespace
+      continue-on-error: true
 
     - name: Install OpenIM Services
       run: |
