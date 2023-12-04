@@ -23,6 +23,8 @@ version: 0.1.0
 # It is recommended to use it with quotes.
 appVersion: "1.16.0"
 
+home: https://github.com/openimsdk/helm-charts
+
 icon: https://raw.githubusercontent.com/openimsdk/open-im-server/main/assets/openim-logo-gradient.svg
 
 maintainers:
