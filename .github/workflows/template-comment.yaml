@@ -20,7 +20,7 @@ jobs:
     - name: Run Helm Template
       id: helm_template
       run: |
-        helm_output=$(helm template ./openim/openim-server -f k8s-open-im-server-config.yaml -f config-imserver.yaml)
+        helm_output=$(helm template ./charts/openim-server -f k8s-open-im-server-config.yaml -f config-imserver.yaml)
         echo "::set-output name=helm_output::$helm_output"
 
     - name: Post comment with Helm output
