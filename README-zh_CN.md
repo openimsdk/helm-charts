@@ -137,7 +137,7 @@ helm install openim-web -f k8s-webfront-config.yaml ./charts/openim-web/ -n open
 1. 修改 k8s-adminfront-config.yaml文件中的域名和tls名称成你系统真实的域名和tls名称 .
 2. 安装openim-admin
 ```
-helm install openim-admin -f k8s-adminfront-config.yaml ./charts/adminfront/ -n openim
+helm install openim-admin -f k8s-adminfront-config.yaml ./charts/openim-admin/ -n openim
 ```
 
 
