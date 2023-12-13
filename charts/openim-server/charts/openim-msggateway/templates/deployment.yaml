@@ -1,12 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "openim-msggateway.fullname" . }}
   labels:
     {{- include "openim-msggateway.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "openim-msggateway.fullname" . }}-headless
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.global.sharedValues.msggatewayReplicaCount }}
   {{- end }}
   selector:
     matchLabels:

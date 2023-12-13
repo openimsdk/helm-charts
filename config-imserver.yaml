@@ -3,7 +3,8 @@
 global:
   monitor:
     enabled: false
-
+  sharedValues:
+    msggatewayReplicaCount: 1
 config:
   envs:
     discovery: k8s
