@@ -2,6 +2,11 @@
 
 OpenIM Helm Charts simplify deployment and management of OpenIM instant messaging platform and associated middleware on Kubernetes clusters.
 
+service         chart-version
+openim-server   0.1.2
+openim-chat     0.1.1
+openim-admin    0.1.1
+openim-web      0.1.1
 ## Prerequisites
 
 1. System environment required

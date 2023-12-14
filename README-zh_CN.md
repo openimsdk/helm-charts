@@ -3,6 +3,11 @@
 OpenIM 的Kubernetes 系统的helm chart部署脚本，一共分三部分，一部分是基础组件(Prometheus，loki，可选部分)，一部分是应用中间件(kafka，mongodb，mysql，redis，minio)，
 一部分是应用服务(openim-server,openim-chat,openim-web,openim-admin)
 
+服务            chart-version
+openim-server   0.1.2
+openim-chat     0.1.1
+openim-admin    0.1.1
+openim-web      0.1.1
 ## 系统要求
 
 1. 系统环境要求

@@ -9,7 +9,7 @@ global:
 image:
   repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-api
   pullPolicy: Always
-  tag: "latest"
+  tag: "release-v3.4"
 ingress:
   enabled: true
   className: "nginx"
@@ -29,7 +29,7 @@ ingress:
 openim-msggateway:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
   ingress:
     enabled: true
@@ -51,45 +51,45 @@ openim-msggateway:
 openim-msgtransfer:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msgtransfer
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-push:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-push
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-rpc-auth:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-auth
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-rpc-conversation:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-conversation
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-rpc-friend:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-friend
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-rpc-group:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-group
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-rpc-msg:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-msg
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-rpc-third:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-third
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
 openim-rpc-user:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-user
-    tag: "latest"
+    tag: "release-v3.4"
     pullPolicy: Always
