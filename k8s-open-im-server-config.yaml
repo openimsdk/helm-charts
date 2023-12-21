@@ -26,9 +26,9 @@ ingress:
       hosts:
         - openim1.server.top
 
-openim-msggateway:
+openim-msggateway-proxy:
   image:
-    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway-proxy
     tag: "release-v3.4"
     pullPolicy: Always
   ingress:
@@ -47,6 +47,11 @@ openim-msggateway:
         hosts:
           - openim1.server.top
 
+openim-msggateway:
+  image:
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway
+    tag: "release-v3.4"
+    pullPolicy: Always
 # openim-msgtransfer in openim/openim-server/values.yaml not defined, Pass to openim/openim-server/openim-msgtransfer/values.yaml
 openim-msgtransfer:
   image:
