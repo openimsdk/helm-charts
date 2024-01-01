@@ -2,8 +2,8 @@
 #Currently, only the configuration with ingressName as nginx is provided.
 #If it is another gateway such as istio or treafik, please modify the corresponding gateway requirements
 image:
-  # registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-admin
-  repository: ghcr.io/openimsdk/openim-admin
+  # ghcr.io/openimsdk/openim-admin 
+  repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-admin
   pullPolicy: Always
   tag: "toc-base-open-k8s.35"
 
