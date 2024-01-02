@@ -5,7 +5,7 @@ image:
   # registry.cn-hangzhou.aliyuncs.com/openimsdk/admin-api
   repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-api-admin
   pullPolicy: Always
-  tag: "release-V1.5"
+  tag: "release-v1.5"
 ingress:
   enabled: true
   className: "nginx"
@@ -26,7 +26,7 @@ chat-api:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-api-chat
     pullPolicy: Always
-    tag: "release-V1.5"
+    tag: "release-v1.5"
   ingress:
     enabled: true
     className: "nginx"
@@ -47,10 +47,10 @@ admin-rpc:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-admin
     pullPolicy: Always
-    tag: "release-V1.5"
+    tag: "release-v1.5"
 
 chat-rpc:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-chat
     pullPolicy: Always
-    tag: "release-V1.5"
+    tag: "release-v1.5"
