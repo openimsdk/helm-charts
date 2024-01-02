@@ -28,8 +28,8 @@ ingress:
 
 openim-msggateway-proxy:
   image:
-    repository: registry.cn-shenzhen.aliyuncs.com/huanglin_hub/openim-msggateway-proxy
-    tag: "dev"
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway-proxy
+    tag: "v3.5.0"
     pullPolicy: Always
   ingress:
     enabled: true
