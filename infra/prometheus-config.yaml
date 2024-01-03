@@ -38,7 +38,7 @@ alertmanager:
             send_resolved: true
   templateFiles:
     template_1.tmpl: |-
-      {{ define "email.to.html" }}
+      {{ define "email1" }}
       {{ range .Alerts }}
       <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
         <h3>OpenIM Alert</h3>
