@@ -4,11 +4,13 @@ OpenIM 的Kubernetes 系统的helm chart部署脚本，一共分三部分，一�
 一部分是应用服务(openim-server,openim-chat,openim-web,openim-admin)
 
 目前最新版本如下:
-服务            chart-version    imageVersion
-openim-server   0.1.2            release-v3.5
-openim-chat     0.1.2            release-V1.5
-openim-admin    0.1.2            toc-base-open-k8s.35
-openim-web      0.1.1            preview-k8s
+
+| service | chart-version | imageVersion |
+|-------|-------|-------|
+| openim-server | 0.1.2 | release-v3.5 |
+| openim-chat | 0.1.2 | release-V1.5 |
+| openim-admin | 0.1.2 | toc-base-open-k8s.35 |
+| openim-web | 0.1.1 | preview-k8s |
 ## 系统要求
 
 1. 系统环境要求
