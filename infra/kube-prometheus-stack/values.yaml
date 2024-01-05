@@ -890,6 +890,12 @@ alertmanager:
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
+  grafana.ini:
+    security:
+      allow_embedding: true
+    auth.anonymous:
+      enabled: true
+      org_role: Viewer
   enabled: true
   namespaceOverride: ""
 
