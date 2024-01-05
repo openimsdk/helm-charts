@@ -74,6 +74,8 @@ jobs:
         # Admin Frontend 安装
         helm install imadminfront ./charts/openim-admin/ -f k8s-adminfront-config.yaml -n openim
 
+        sleep 60
+
     - name: Test Installation
       run: |
         kubectl get pod -A
