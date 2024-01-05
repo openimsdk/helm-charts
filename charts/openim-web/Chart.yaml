@@ -12,7 +12,7 @@ description: Openim-web is the front-end web chat of openim
 # pipeline. Library charts do not define any templates and therefore cannot be deployed.
 type: application
 
-# This is the chart version. This version number should be incremented each time you make changes
+# This is the chart version. This version number should be incremented each time you make changes to the pull request title\n# Scope must match one of: openim-server, openim-chat, openim-web, openim-admin, mongodb, mysql, deps, github.
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 0.1.1
