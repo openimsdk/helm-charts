@@ -24,7 +24,7 @@ version: 0.1.2
 appVersion: "1.16.0"
  
 
-home: https://github.com/openimsdk/helm-charts
+home: https://github.com/openimsdk/helm-charts 
 
 icon: https://raw.githubusercontent.com/openimsdk/open-im-server/main/assets/openim-logo-gradient.svg
  
