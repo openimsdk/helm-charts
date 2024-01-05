@@ -9,7 +9,7 @@ global:
 image:
   repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-api
   pullPolicy: Always
-  tag: "latest"
+  tag: "release-v3.5"
 ingress:
   enabled: true
   className: "nginx"
@@ -26,10 +26,10 @@ ingress:
       hosts:
         - openim1.server.top
 
-openim-msggateway:
+openim-msggateway-proxy:
   image:
-    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway
-    tag: "latest"
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway-proxy
+    tag: "v3.5.0"
     pullPolicy: Always
   ingress:
     enabled: true
@@ -47,49 +47,54 @@ openim-msggateway:
         hosts:
           - openim1.server.top
 
+openim-msggateway:
+  image:
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway
+    tag: "release-v3.5"
+    pullPolicy: Always
 # openim-msgtransfer in openim/openim-server/values.yaml not defined, Pass to openim/openim-server/openim-msgtransfer/values.yaml
 openim-msgtransfer:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msgtransfer
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-push:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-push
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-rpc-auth:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-auth
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-rpc-conversation:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-conversation
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-rpc-friend:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-friend
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-rpc-group:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-group
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-rpc-msg:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-msg
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-rpc-third:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-third
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always
 openim-rpc-user:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-user
-    tag: "latest"
+    tag: "release-v3.5"
     pullPolicy: Always

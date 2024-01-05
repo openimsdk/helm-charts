@@ -3,7 +3,8 @@
 global:
   monitor:
     enabled: false
-
+  sharedValues:
+    msggatewayReplicaCount: 1
 config:
   envs:
     discovery: k8s
@@ -356,7 +357,7 @@ config:
   # The number of ports needs to be consistent with msg_transfer_service_num in script/path_info.sh
   prometheus:
     enable: false
-    prometheusUrl: "https://openim2.server.top/"
+    grafanaUrl: "https://openim2.server.top/"
     apiPrometheusPort: [ 90 ]
     userPrometheusPort: [ 90 ]
     friendPrometheusPort: [ 90 ]
