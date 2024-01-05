@@ -1,0 +1,15 @@
+{{- if .Values.global.monitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: kube-prometheus-stack
+  name: {{ include "openim-msggateway-proxy.fullname" . }}
+spec:
+  endpoints:
+    - interval: 15s
+      port: metrics-port
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openim-msggateway-proxy
+{{- end }}
