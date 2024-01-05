@@ -33,5 +33,10 @@ jobs:
             mysql
             deps
             github
+            openim-admin
+            mongodb
+            mysql
+            deps
+            github
           # Configure that a scope must always be provided.
           requireScope: true
