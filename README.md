@@ -7,7 +7,7 @@ service         chart-version    imageVersion
 openim-server   0.1.2            release-v3.5
 openim-chat     0.1.2            release-V1.5
 openim-admin    0.1.2            toc-base-open-k8s.35
-openim-web      0.1.1            preview-k8s
+openim-web 0.1.1 preview-k8s
 ## Prerequisites
 
 1. System environment required
