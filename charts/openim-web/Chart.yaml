@@ -36,6 +36,8 @@ keywords:
   - im
   - chat
   - openim-web
+  - chat
+  - openim-web
 
 sources:
   - "https://github.com/openimsdk/open-im-server"
