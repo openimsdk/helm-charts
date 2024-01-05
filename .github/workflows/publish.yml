@@ -59,7 +59,7 @@ jobs:
         with:
           config: "./.github/configs/cr.yaml"
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.BOT_GITHUB_TOKEN }}"
 
       - name: Login to GHCR
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
