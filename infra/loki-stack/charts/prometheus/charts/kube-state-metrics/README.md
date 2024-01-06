@@ -1,68 +1,111 @@
-# kube-state-metrics Helm Chart
+# kube-state-metrics
 
-Installs the [kube-state-metrics agent](https://github.com/kubernetes/kube-state-metrics).
+![Version: 4.4.3](https://img.shields.io/badge/Version-4.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.3.0](https://img.shields.io/badge/AppVersion-2.3.0-informational?style=flat-square)
 
-## Get Repo Info
+Install kube-state-metrics to generate and expose cluster-level metrics
 
-```console
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-```
+**Homepage:** <https://github.com/kubernetes/kube-state-metrics/>
 
-_See [helm repo](https://helm.sh/docs/helm/helm_repo/) for command documentation._
+## Maintainers
 
-## Install Chart
+| Name | Email | Url |
+| ---- | ------ | --- |
+| tariq1890 | <tariq.ibrahim@mulesoft.com> |  |
+| mrueg | <manuel@rueg.eu> |  |
+| dotdc | <davidcalvertfr@gmail.com> |  |
 
-```console
-helm install [RELEASE_NAME] prometheus-community/kube-state-metrics [flags]
-```
+## Source Code
 
-_See [configuration](#configuration) below._
+* <https://github.com/kubernetes/kube-state-metrics/>
 
-_See [helm install](https://helm.sh/docs/helm/helm_install/) for command documentation._
+## Values
 
-## Uninstall Chart
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| autosharding.enabled | bool | `false` |  |
+| collectors[0] | string | `"certificatesigningrequests"` |  |
+| collectors[10] | string | `"mutatingwebhookconfigurations"` |  |
+| collectors[11] | string | `"namespaces"` |  |
+| collectors[12] | string | `"networkpolicies"` |  |
+| collectors[13] | string | `"nodes"` |  |
+| collectors[14] | string | `"persistentvolumeclaims"` |  |
+| collectors[15] | string | `"persistentvolumes"` |  |
+| collectors[16] | string | `"poddisruptionbudgets"` |  |
+| collectors[17] | string | `"pods"` |  |
+| collectors[18] | string | `"replicasets"` |  |
+| collectors[19] | string | `"replicationcontrollers"` |  |
+| collectors[1] | string | `"configmaps"` |  |
+| collectors[20] | string | `"resourcequotas"` |  |
+| collectors[21] | string | `"secrets"` |  |
+| collectors[22] | string | `"services"` |  |
+| collectors[23] | string | `"statefulsets"` |  |
+| collectors[24] | string | `"storageclasses"` |  |
+| collectors[25] | string | `"validatingwebhookconfigurations"` |  |
+| collectors[26] | string | `"volumeattachments"` |  |
+| collectors[2] | string | `"cronjobs"` |  |
+| collectors[3] | string | `"daemonsets"` |  |
+| collectors[4] | string | `"deployments"` |  |
+| collectors[5] | string | `"endpoints"` |  |
+| collectors[6] | string | `"horizontalpodautoscalers"` |  |
+| collectors[7] | string | `"ingresses"` |  |
+| collectors[8] | string | `"jobs"` |  |
+| collectors[9] | string | `"limitranges"` |  |
+| containerSecurityContext | object | `{}` |  |
+| customLabels | object | `{}` |  |
+| extraArgs | list | `[]` |  |
+| hostNetwork | bool | `false` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"k8s.gcr.io/kube-state-metrics/kube-state-metrics"` |  |
+| image.tag | string | `"v2.3.0"` |  |
+| imagePullSecrets | list | `[]` |  |
+| kubeTargetVersionOverride | string | `""` |  |
+| kubeconfig.enabled | bool | `false` |  |
+| kubeconfig.secret | string | `nil` |  |
+| metricAllowlist | list | `[]` |  |
+| metricAnnotationsAllowList | list | `[]` |  |
+| metricDenylist | list | `[]` |  |
+| metricLabelsAllowlist | list | `[]` |  |
+| namespaceOverride | string | `""` |  |
+| namespaces | string | `""` |  |
+| nodeSelector | object | `{}` |  |
+| podAnnotations | object | `{}` |  |
+| podDisruptionBudget | object | `{}` |  |
+| podSecurityPolicy.additionalVolumes | list | `[]` |  |
+| podSecurityPolicy.annotations | object | `{}` |  |
+| podSecurityPolicy.enabled | bool | `false` |  |
+| prometheus.monitor.additionalLabels | object | `{}` |  |
+| prometheus.monitor.enabled | bool | `false` |  |
+| prometheus.monitor.honorLabels | bool | `false` |  |
+| prometheus.monitor.interval | string | `""` |  |
+| prometheus.monitor.jobLabel | string | `""` |  |
+| prometheus.monitor.metricRelabelings | list | `[]` |  |
+| prometheus.monitor.namespace | string | `""` |  |
+| prometheus.monitor.proxyUrl | string | `""` |  |
+| prometheus.monitor.relabelings | list | `[]` |  |
+| prometheus.monitor.scrapeTimeout | string | `""` |  |
+| prometheus.monitor.selectorOverride | object | `{}` |  |
+| prometheusScrape | bool | `true` |  |
+| rbac.create | bool | `true` |  |
+| rbac.useClusterRole | bool | `true` |  |
+| releaseLabel | bool | `false` |  |
+| replicas | int | `1` |  |
+| resources | object | `{}` |  |
+| securityContext.enabled | bool | `true` |  |
+| securityContext.fsGroup | int | `65534` |  |
+| securityContext.runAsGroup | int | `65534` |  |
+| securityContext.runAsUser | int | `65534` |  |
+| selfMonitor.enabled | bool | `false` |  |
+| service.annotations | object | `{}` |  |
+| service.loadBalancerIP | string | `""` |  |
+| service.nodePort | int | `0` |  |
+| service.port | int | `8080` |  |
+| service.type | string | `"ClusterIP"` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.imagePullSecrets | list | `[]` |  |
+| serviceAccount.name | string | `nil` |  |
+| tolerations | list | `[]` |  |
 
-```console
-helm uninstall [RELEASE_NAME]
-```
-
-This removes all the Kubernetes components associated with the chart and deletes the release.
-
-_See [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) for command documentation._
-
-## Upgrading Chart
-
-```console
-helm upgrade [RELEASE_NAME] prometheus-community/kube-state-metrics [flags]
-```
-
-_See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documentation._
-
-### Migrating from stable/kube-state-metrics and kubernetes/kube-state-metrics
-
-You can upgrade in-place:
-
-1. [get repo info](#get-repo-info)
-1. [upgrade](#upgrading-chart) your existing release name using the new chart repo
-
-
-## Upgrading to v3.0.0
-
-v3.0.0 includes kube-state-metrics v2.0, see the [changelog](https://github.com/kubernetes/kube-state-metrics/blob/release-2.0/CHANGELOG.md) for major changes on the application-side.
-
-The upgraded chart now the following changes:
-* Dropped support for helm v2 (helm v3 or later is required)
-* collectors key was renamed to resources
-* namespace key was renamed to namespaces
-
-
-## Configuration
-
-See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To see all configurable options with detailed comments:
-
-```console
-helm show values prometheus-community/kube-state-metrics
-```
-
-You may also run `helm show values` on this chart's [dependencies](#dependencies) for additional options.
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.9.1](https://github.com/norwoodj/helm-docs/releases/v1.9.1)

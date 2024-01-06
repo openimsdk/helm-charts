@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+        contents: write
+        pull-requests: write
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -74,10 +77,55 @@ jobs:
         # Admin Frontend 安装
         helm install imadminfront ./charts/openim-admin/ -f k8s-adminfront-config.yaml -n openim
 
+        sleep 60
+
     - name: Test Installation
       run: |
         kubectl get pod -A
         kubectl get pods -n openim
+        kubectl get pod -A >> /tmp/out.md
+        kubectl get pods -n openim >> /tmp/out.md
+
+    - name: Comment PR with message
+      uses: ./
+      id: nrt_message
+      with:
+        message: |
+          Current branch is `${{ github.head_ref }}`.
+          _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+        comment_tag: nrt_message
+        reactions: eyes, rocket
+        mode: recreate
+
+    - name: Comment PR with message that will be deleted
+      uses: ./
+      with:
+        message: |
+          This PR is being built... 
+        comment_tag: nrt_message_delete
+        reactions: eyes
+        mode: delete
+
+    - name: Comment PR with file
+      uses: ./
+      with:
+        filePath: /tmp/out.md
+        comment_tag: nrt_file
+        reactions: eyes, rocket
+        mode: recreate
+
+    - name: Do not comment PR if not exists
+      uses: ./
+      with:
+        message: Should not be printed
+        comment_tag: nrt_create_if_not_exists
+        create_if_not_exists: false
+
+    - name: Check outputs
+      run: |
+        echo "id : ${{ steps.nrt_message.outputs.id }}"
+        echo "body : ${{ steps.nrt_message.outputs.body }}"
+        echo "html_url : ${{ steps.nrt_message.outputs.html_url }}"
 
     - name: Cleanup
       if: always()
