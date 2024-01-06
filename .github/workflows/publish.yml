@@ -29,7 +29,7 @@ jobs:
 
       - name: Add dependency chart repos
         run: |
-          helm repo add dandydeveloper https://dandydeveloper.github.io/charts/
+          helm repo add openim https://openimsdk.github.io/charts/
 
       - name: Configure Git
         run: |
