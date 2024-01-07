@@ -30,7 +30,7 @@ jobs:
       - name: Add dependency chart repos
         run: |
           helm repo add openim https://openimsdk.github.io/charts/
-        continue-on-error: true
+        # continue-on-error: true
 
       - name: Configure Git
         run: |
