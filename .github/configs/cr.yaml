@@ -10,3 +10,7 @@ key: OpenIM Helm maintainers
 # Enable automatic generation of release notes using GitHubs release notes generator.
 # see: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
 generate-release-notes: true
+
+owner: openimsdk
+git-base-url: https://api.github.com/
+git-repo: helm-charts
