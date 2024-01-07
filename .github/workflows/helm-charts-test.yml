@@ -89,6 +89,7 @@ jobs:
         append_k8s_resource() {
             resource_type=$1
             echo "<details><summary>openim namespaces get $resource_type</summary>" >> $output_file
+            echo '' >> $output_file
             echo '```markdown' >> $output_file
             kubectl get $resource_type -n openim | tee -a $output_file
             echo '```' >> $output_file
