@@ -61,6 +61,7 @@ jobs:
 
         # Install Redis
         helm install im-redis infra/redis -f infra/redis-config.yaml -n openim --create-namespace
+
       continue-on-error: true
 
     - name: Install OpenIM Services
@@ -81,13 +82,32 @@ jobs:
 
     - name: Test Installation
       run: |
-        kubectl get pod -A
-        kubectl get pods -n openim
+        echo "## Pods in openim Namespace" > /tmp/out.md
+        echo '```markdown' >> /tmp/out.md
+        kubectl get pod -n openim >> /tmp/out.md
+        echo '```' >> /tmp/out.md
+        echo "## Pods in All Namespaces" >> /tmp/out.md
+        echo '```' >> /tmp/out.md
         kubectl get pod -A >> /tmp/out.md
-        kubectl get pods -n openim >> /tmp/out.md
+        echo '```' >> /tmp/out.md
+
+    - id: pr
+      run: |
+        issue=$(gh pr list --search "${{ github.sha }}" --state open --json number --jq ".[0].number")
+        echo "issue=$issue" >>$GITHUB_OUTPUT
+      env:
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+    - uses: mshick/add-pr-comment@v2
+      with:
+        issue: ${{ steps.pr.outputs.issue }}
+        message: |
+          **Howdie!**
+      env:
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: Comment PR with message
-      uses: ./
+      uses: thollander/actions-comment-pull-request@v2
       id: nrt_message
       with:
         message: |
@@ -96,30 +116,34 @@ jobs:
         comment_tag: nrt_message
         reactions: eyes, rocket
         mode: recreate
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: Comment PR with message that will be deleted
-      uses: ./
+      uses: thollander/actions-comment-pull-request@v2
       with:
         message: |
           This PR is being built... 
         comment_tag: nrt_message_delete
         reactions: eyes
         mode: delete
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: Comment PR with file
-      uses: ./
+      uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: /tmp/out.md
         comment_tag: nrt_file
         reactions: eyes, rocket
         mode: recreate
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: Do not comment PR if not exists
-      uses: ./
+      uses: thollander/actions-comment-pull-request@v2
       with:
         message: Should not be printed
         comment_tag: nrt_create_if_not_exists
         create_if_not_exists: false
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: Check outputs
       run: |
