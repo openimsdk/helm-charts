@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [ release_success ]
+
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read

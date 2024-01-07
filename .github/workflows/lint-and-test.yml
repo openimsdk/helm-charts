@@ -85,7 +85,7 @@ jobs:
           helm template charts/openim-web/ --set server.extensions.enabled=true -s templates/crds/* | kubectl apply -f -
 
       - name: Skip HPA tests of OpenIM
-        if: contains(steps.list-changed.outputs.changed_charts, 'argo-cd')
+        if: contains(steps.list-changed.outputs.changed_charts, 'openim-admin')
         run: |
           ## Metrics API not available in kind cluster
           rm charts/argo-cd/ci/ha-autoscaling-values.yaml

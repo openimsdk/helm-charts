@@ -82,29 +82,28 @@ jobs:
 
     - name: Test Installation
       run: |
-        echo "## Pods in openim Namespace" > /tmp/out.md
-        echo '```markdown' >> /tmp/out.md
-        kubectl get pod -n openim >> /tmp/out.md
-        echo '```' >> /tmp/out.md
-        echo "## Pods in All Namespaces" >> /tmp/out.md
-        echo '```' >> /tmp/out.md
-        kubectl get pod -A >> /tmp/out.md
-        echo '```' >> /tmp/out.md
+        output_file="/tmp/out.md"
+        echo "## Kubernetes Resources in openim Namespace" > $output_file
 
-    - id: pr
-      run: |
-        issue=$(gh pr list --search "${{ github.sha }}" --state open --json number --jq ".[0].number")
-        echo "issue=$issue" >>$GITHUB_OUTPUT
-      env:
-        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        # Function to append Kubernetes resources to Markdown
+        append_k8s_resource() {
+            resource_type=$1
+            echo "<details><summary>openim namespaces get $resource_type</summary>" >> $output_file
+            echo '' >> $output_file
+            echo '```markdown' >> $output_file
+            kubectl get $resource_type -n openim | tee -a $output_file
+            echo '```' >> $output_file
+            echo '</details>' >> $output_file
+        }
 
-    - uses: mshick/add-pr-comment@v2
-      with:
-        issue: ${{ steps.pr.outputs.issue }}
-        message: |
-          **Howdie!**
-      env:
-        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        # Append different Kubernetes resources to Markdown
+        append_k8s_resource "pods"
+        append_k8s_resource "deployments"
+        append_k8s_resource "services"
+        append_k8s_resource "replicasets"
+        append_k8s_resource "statefulsets"
+        append_k8s_resource "configmaps"
+        append_k8s_resource "secrets"
 
     - name: Comment PR with message
       uses: thollander/actions-comment-pull-request@v2

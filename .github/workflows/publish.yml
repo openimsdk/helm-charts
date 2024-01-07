@@ -30,6 +30,7 @@ jobs:
       - name: Add dependency chart repos
         run: |
           helm repo add openim https://openimsdk.github.io/charts/
+        continue-on-error: true
 
       - name: Configure Git
         run: |
@@ -77,3 +78,5 @@ jobs:
             fi
             helm push "${pkg}" oci://ghcr.io/${{ github.repository }}
           done
+        env:
+          HELM_EXPERIMENTAL_OCI: 1
