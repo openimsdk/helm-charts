@@ -1,3 +1,4 @@
+name: Sync README to gh-pages
 on:
   push:
     branches:
