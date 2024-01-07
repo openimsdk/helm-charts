@@ -42,6 +42,7 @@ jobs:
         uses: helm/chart-releaser-action@v1.5.0
         with:
             charts_dir: charts
+            config: "./.github/configs/cr.yaml"
             # version: The chart-releaser version to use (default: v1.6.0)
             # config: Optional config file for chart-releaser. For more information on the config file, see the documentation
             # charts_dir: The charts directory
