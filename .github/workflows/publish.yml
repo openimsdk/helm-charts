@@ -29,9 +29,9 @@ jobs:
         with:
           version: v3.10.1 # Also update in lint-and-test.yaml
 
-      - name: Add dependency chart repos
-        run: |
-          helm repo add openim https://openimsdk.github.io/helm-charts
+    #   - name: Add dependency chart repos
+    #     run: |
+    #       helm repo add openim https://openimsdk.github.io/helm-charts
 
       - name: Configure Git
         run: |
