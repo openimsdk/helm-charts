@@ -40,6 +40,7 @@ jobs:
 
       - name: Fetch history
         run: git fetch --prune --unshallow
+        continue-on-error: true
 
       # The GitHub repository secret `PGP_PRIVATE_KEY` contains the private key
       # in ASCII-armored format. To export a (new) key, run this command:
