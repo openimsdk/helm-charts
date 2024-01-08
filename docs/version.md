@@ -9,7 +9,7 @@ Unlike traditional software version control that often relies on branch concepts
 - **Chart.yaml File**: Each chart contains a `Chart.yaml` file in its directory. This file is pivotal for managing the version of each individual chart. It holds the `version` key, which gets updated with every new release.
 
 ```yaml
-version: 0.1.12
+version: 0.1.13
 ```
 
 - **Automated CICD**: Developers don't need to worry about managing branches, tags, or releases manually. These aspects are handled automatically through Continuous Integration and Continuous Deployment (CICD) systems. When a new chart version is pushed to the repository, the CICD pipeline is triggered.
