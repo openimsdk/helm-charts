@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "charts/**"
+    # paths:
+    #   - "charts/**"
 
 permissions:
   contents: write # to push chart release and create a release (helm/chart-releaser-action)
