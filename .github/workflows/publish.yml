@@ -70,7 +70,6 @@ jobs:
           charts_dir: charts
           config: "./.github/configs/cr.yaml"
           packages_with_index: true
-          skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.BOT_GITHUB_TOKEN }}"
 

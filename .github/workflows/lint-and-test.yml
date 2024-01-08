@@ -80,7 +80,7 @@ jobs:
           contains(steps.list-changed.outputs.changed_charts, 'openim-web') ||
           contains(steps.list-changed.outputs.changed_charts, 'openim-admin')
         run: |
-          helm repo add openim https://openimsdk.github.io/charts/
+          helm repo add openim https://openimsdk.github.io/helm-charts/
           helm openim build charts/openim-web/
           helm template charts/openim-web/ --set server.extensions.enabled=true -s templates/crds/* | kubectl apply -f -
 
