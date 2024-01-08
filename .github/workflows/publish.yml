@@ -39,7 +39,7 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Fetch history
-        run: git fetch --prune --unshallow
+        run: git checkout origin/gh-pages index.yaml
         continue-on-error: true
 
       # The GitHub repository secret `PGP_PRIVATE_KEY` contains the private key
