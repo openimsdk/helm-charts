@@ -32,10 +32,10 @@ jobs:
         with:
           version: v3.13.0
 
-    #   - name: Add dependency chart repos
-    #     run: |
-    #       helm repo add bitnami https://charts.bitnami.com/bitnami
-    #       helm repo add grafana https://grafana.github.io/helm-charts
+      - name: Add dependency chart repos
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add grafana https://grafana.github.io/helm-charts
     #       helm repo add openim https://openim.github.io/helm-charts
 
       - name: Run chart-releaser
