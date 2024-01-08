@@ -1,23 +1,23 @@
-# name: Release Charts
+name: Release Charts
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
 
-# jobs:
-#   release:
-#     # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
-#     # see: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
-#     permissions:
-#       contents: write # to push chart release and create a release (helm/chart-releaser-action)
-#       packages: write # needed for ghcr access
-#       id-token: write # needed for keyless signing
+jobs:
+  release:
+    # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
+    # see: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
+    permissions:
+      contents: write # to push chart release and create a release (helm/chart-releaser-action)
+      packages: write # needed for ghcr access
+      id-token: write # needed for keyless signing
 
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
 #       - name: Fetch history
 #         run: git fetch --prune --unshallow
