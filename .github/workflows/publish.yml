@@ -44,12 +44,12 @@ jobs:
           git checkout origin/gh-pages index.yaml
         continue-on-error: true
 
-      - name: Pull latest changes from gh-pages
-        run: |
-          git fetch origin gh-pages
-          git checkout gh-pages
-          git pull origin gh-pages
-        continue-on-error: true
+    #   - name: Pull latest changes from gh-pages
+    #     run: |
+    #       git fetch origin gh-pages
+    #       git checkout gh-pages
+    #       git pull origin gh-pages
+    #     continue-on-error: true
 
       # The GitHub repository secret `PGP_PRIVATE_KEY` contains the private key
       # in ASCII-armored format. To export a (new) key, run this command:
