@@ -37,7 +37,7 @@ openim-web      0.1.1            preview-k8s
 + **k8s-open-im-server-config.yaml**: custom values configurations for openim-server chart
 + **k8s-webfront-config.yaml**: custom values configurations for openim-web chart
 
-Detailed directory info can be found in the respective directories.
+> Detailed directory info can be found in the respective directories.
 
 ## Quick Start
 
