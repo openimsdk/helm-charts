@@ -29,8 +29,7 @@ jobs:
 
       - name: Add dependency chart repos
         run: |
-          helm repo add openim https://openimsdk.github.io/charts/
-        # continue-on-error: true
+          helm repo add openim https://openimsdk.github.io/helm-charts
 
       - name: Configure Git
         run: |
@@ -68,7 +67,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.BOT_GITHUB_TOKEN }}
 
       - name: Push chart to GHCR
         run: |

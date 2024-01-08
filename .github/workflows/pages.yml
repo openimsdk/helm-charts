@@ -48,7 +48,7 @@ jobs:
           elif [[ "${{ github.event_name }}" == "push" ]]; then
             bash helm.sh
           fi
-          sudo cp  index.yaml _site/
+          sudo cp index.yaml _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
 
