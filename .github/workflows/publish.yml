@@ -62,6 +62,8 @@ jobs:
         with:
           charts_dir: charts
           config: "./.github/configs/cr.yaml"
+          packages_with_index: true
+          skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.BOT_GITHUB_TOKEN }}"
 
@@ -79,7 +81,7 @@ jobs:
             if [ -z "${pkg:-}" ]; then
               break
             fi
-            helm push "${pkg}" oci://ghcr.io/${{ github.repository }}
+            helm push "${pkg}" oci://ghcr.io/${{ github.repository }}/charts
           done
         env:
           HELM_EXPERIMENTAL_OCI: 1
