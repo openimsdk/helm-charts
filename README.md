@@ -166,6 +166,7 @@ helm install openim-web -f k8s-webfront-config.yaml ./charts/openim-web/ -n open
 helm install openim-admin -f k8s-adminfront-config.yaml ./charts/openim-admin/ -n openim
 ```
 
-
 ## How to use grafana
 [docs/user-guider.md](docs/user-guide.md)
+
+
