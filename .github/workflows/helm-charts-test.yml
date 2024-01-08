@@ -81,6 +81,7 @@ jobs:
         sleep 60
 
     - name: Test Installation
+      if: github.event_name == 'pull_request'
       run: |
         output_file="/tmp/out.md"
         echo "## Kubernetes Resources in openim Namespace" > $output_file
@@ -107,6 +108,7 @@ jobs:
 
     - name: Comment PR with message
       uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
       id: nrt_message
       with:
         message: |
@@ -119,6 +121,7 @@ jobs:
 
     - name: Comment PR with message that will be deleted
       uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
       with:
         message: |
           This PR is being built... 
@@ -129,6 +132,7 @@ jobs:
 
     - name: Comment PR with file
       uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
       with:
         filePath: /tmp/out.md
         comment_tag: nrt_file
@@ -138,6 +142,7 @@ jobs:
 
     - name: Do not comment PR if not exists
       uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
       with:
         message: Should not be printed
         comment_tag: nrt_create_if_not_exists
@@ -145,6 +150,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: Check outputs
+      if: github.event_name == 'pull_request'
       run: |
         echo "id : ${{ steps.nrt_message.outputs.id }}"
         echo "body : ${{ steps.nrt_message.outputs.body }}"

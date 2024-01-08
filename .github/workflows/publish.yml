@@ -8,7 +8,9 @@ on:
       - "charts/**"
 
 permissions:
-  contents: read
+  contents: write # to push chart release and create a release (helm/chart-releaser-action)
+  packages: write # needed for ghcr access
+  id-token: write # needed for keyless signing
 
 jobs:
   publish:
