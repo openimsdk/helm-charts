@@ -43,6 +43,12 @@ chat-api:
         hosts:
           - openim1.server.top
 
+office-rpc:
+  image:
+    repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-office
+    pullPolicy: Always
+    tag: "release-v1.5"
+
 admin-rpc:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/chat-rpc-admin

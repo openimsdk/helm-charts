@@ -24,9 +24,11 @@ config:
   rpcPort:
     openImAdminPort: [ 80 ]
     openImChatPort: [ 80 ]
+    openImOfficePort: [ 80 ]
   rpcRegisterName:
     openImAdminName: openimchat-admin-rpc:80
     openImChatName: openimchat-chat-rpc:80
+    openImOfficeName: openimchat-office-rpc:80
 
   # 没有配置表示和OpenIM一致
   mysql:
@@ -51,6 +53,16 @@ config:
     isJson: false
     withStack: false
 
+  # 没有配置表示和OpenIM一致
+  mongo:
+    #  uri:                                    #不为空则直接使用该值
+    address: [ im-mongodb:27017 ]            #单机时为mongo地址，使用分片集群时，为mongos地址
+    username: root                          #用户名
+    password: openIM123                     #密码
+    maxPoolSize: 100
+    database: openIM                        #mongo db 默认即可
+
+
   secret: openIM123
   tokenPolicy:
     expire: 86400
@@ -69,7 +81,14 @@ config:
       accessKeySecret: ""
       signName: ""
       verificationCodeTemplateCode: ""
-
+    mail: # 根据对应的发件邮箱更改 sendMail、senderAuthorizationCode、smtpAddr、smtpPort 即可
+      title: ""
+      senderMail: "" # 发送者
+      senderAuthorizationCode: "" # 授权码
+      smtpAddr: "smtp.qq.com"  # smtp 服务器地址
+      smtpPort: 25   # smtp 服务器邮件发送端口
+    testDepartMentID: 001
+    imAPIURL: http://openimserver-openim-api
   # 获取ip的header,没有配置直接获取远程地址
   #proxyHeader: "X-Forwarded-For"
 

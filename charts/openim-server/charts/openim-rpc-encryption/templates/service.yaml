@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openim-rpc-encryption.fullname" . }}
+  labels:
+    {{- include "openim-rpc-encryption.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 90
+      targetPort: 90
+      protocol: TCP
+      name: metrics-port
+  selector:
+    {{- include "openim-rpc-encryption.selectorLabels" . | nindent 4 }}
