@@ -27,7 +27,7 @@ openim-web      0.1.1            preview-k8s
 > **Note**: the next release ,we will adapt the chart's ingress configuration for traefik and istio ingress-controller.
 
 ## Directory Structure
-+ **dock/**: user-guide dock,how to use grafana and loki
++ **docs/**: user-guide docs,how to use grafana and loki
 + **charts/**: Helm Charts for "openim-admin","openim-chat","openim-server","openim-web"
 + **infra**: Contains Helm Charts/configurations for middleware OpenIM relies on(e.g. kafka,minio,mongodb,mysql,redis;prometheus and loki are also included).
 + **config-imserver.yaml**: openim-server's config file,Used to generate configmap for openim-server.
