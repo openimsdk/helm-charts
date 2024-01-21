@@ -47,11 +47,14 @@ openim-msggateway-proxy:
         hosts:
           - openim1.server.top
 
+<<<<<<< HEAD
 openim-rpc-encryption:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-rpc-encryption
     tag: "release-v3.5"
     pullPolicy: Always
+=======
+>>>>>>> origin/main
 openim-msggateway:
   image:
     repository: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-msggateway

@@ -32,7 +32,7 @@ jobs:
           version: v3.10.1 # Also update in publish.yaml
 
       - name: Set up python
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: 3.9
 
@@ -75,17 +75,17 @@ jobs:
         with:
           config: .github/configs/kind-config.yaml
 
-      - name: Deploy latest ArgoCD CRDs when testing ArgoCD extensions
+      - name: Deploy latest OpenIM CRDs when testing OpenIM extensions
         if: |
-          contains(steps.list-changed.outputs.changed_charts, 'argocd-image-updater') ||
-          contains(steps.list-changed.outputs.changed_charts, 'argocd-apps')
+          contains(steps.list-changed.outputs.changed_charts, 'openim-web') ||
+          contains(steps.list-changed.outputs.changed_charts, 'openim-admin')
         run: |
-          helm repo add dandydeveloper https://dandydeveloper.github.io/charts/
-          helm dependency build charts/argo-cd/
-          helm template charts/argo-cd/ --set server.extensions.enabled=true -s templates/crds/* | kubectl apply -f -
+          helm repo add openim https://openimsdk.github.io/helm-charts/
+          helm openim build charts/openim-web/
+          helm template charts/openim-web/ --set server.extensions.enabled=true -s templates/crds/* | kubectl apply -f -
 
-      - name: Skip HPA tests of ArgoCD
-        if: contains(steps.list-changed.outputs.changed_charts, 'argo-cd')
+      - name: Skip HPA tests of OpenIM
+        if: contains(steps.list-changed.outputs.changed_charts, 'openim-admin')
         run: |
           ## Metrics API not available in kind cluster
           rm charts/argo-cd/ci/ha-autoscaling-values.yaml

@@ -68,12 +68,27 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+global:
+  monitor:
+    enabled: false
+    additionalLabels: {}
+    namespace: ""
+    jobLabel: ""
+    interval: ""
+    scrapeTimeout: ""
+    proxyUrl: ""
+    selectorOverride: {}
+    honorLabels: false
+    metricRelabelings: []
+    relabelings: []
+
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+
 
 nodeSelector: {}
 

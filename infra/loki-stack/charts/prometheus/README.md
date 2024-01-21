@@ -1,226 +1,556 @@
-# Prometheus
-
-[Prometheus](https://prometheus.io/), a [Cloud Native Computing Foundation](https://cncf.io/) project, is a systems and service monitoring system. It collects metrics from configured targets at given intervals, evaluates rule expressions, displays the results, and can trigger alerts if some condition is observed to be true.
-
-This chart bootstraps a [Prometheus](https://prometheus.io/) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
-
-## Prerequisites
-
-- Kubernetes 1.16+
-- Helm 3+
-
-## Get Repo Info
-
-```console
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-```
-
-_See [helm repo](https://helm.sh/docs/helm/helm_repo/) for command documentation._
-
-## Install Chart
-
-```console
-helm install [RELEASE_NAME] prometheus-community/prometheus
-```
-
-_See [configuration](#configuration) below._
-
-_See [helm install](https://helm.sh/docs/helm/helm_install/) for command documentation._
-
-## Dependencies
-
-By default this chart installs additional, dependent charts:
-
-- [kube-state-metrics](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics)
-
-To disable the dependency during installation, set `kubeStateMetrics.enabled` to `false`.
-
-_See [helm dependency](https://helm.sh/docs/helm/helm_dependency/) for command documentation._
-
-## Uninstall Chart
-
-```console
-helm uninstall [RELEASE_NAME]
-```
-
-This removes all the Kubernetes components associated with the chart and deletes the release.
-
-_See [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) for command documentation._
-
-## Upgrading Chart
-
-```console
-helm upgrade [RELEASE_NAME] [CHART] --install
-```
-
-_See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documentation._
-
-### To 15.0
-
-Version 15.0.0 changes the relabeling config, aligning it with the [Prometheus community conventions](https://github.com/prometheus/prometheus/pull/9832). If you've made manual changes to the relabeling config, you have to adapt your changes.
-
-Before you update please execute the following command, to be able to update kube-state-metrics:
-
-```bash
-kubectl delete deployments.apps -l app.kubernetes.io/instance=prometheus,app.kubernetes.io/name=kube-state-metrics --cascade=orphan
-```
-
-### To 9.0
-
-Version 9.0 adds a new option to enable or disable the Prometheus Server. This supports the use case of running a Prometheus server in one k8s cluster and scraping exporters in another cluster while using the same chart for each deployment. To install the server `server.enabled` must be set to `true`.
-
-### To 5.0
-
-As of version 5.0, this chart uses Prometheus 2.x. This version of prometheus introduces a new data format and is not compatible with prometheus 1.x. It is recommended to install this as a new release, as updating existing releases will not work. See the [prometheus docs](https://prometheus.io/docs/prometheus/latest/migration/#storage) for instructions on retaining your old data.
-
-Prometheus version 2.x has made changes to alertmanager, storage and recording rules. Check out the migration guide [here](https://prometheus.io/docs/prometheus/2.0/migration/).
-
-Users of this chart will need to update their alerting rules to the new format before they can upgrade.
-
-### Example Migration
-
-Assuming you have an existing release of the prometheus chart, named `prometheus-old`. In order to update to prometheus 2.x while keeping your old data do the following:
-
-1. Update the `prometheus-old` release. Disable scraping on every component besides the prometheus server, similar to the configuration below:
-
-  ```yaml
-  alertmanager:
-    enabled: false
-  alertmanagerFiles:
-    alertmanager.yml: ""
-  kubeStateMetrics:
-    enabled: false
-  nodeExporter:
-    enabled: false
-  pushgateway:
-    enabled: false
-  server:
-    extraArgs:
-      storage.local.retention: 720h
-  serverFiles:
-    alerts: ""
-    prometheus.yml: ""
-    rules: ""
-  ```
-
-1. Deploy a new release of the chart with version 5.0+ using prometheus 2.x. In the values.yaml set the scrape config as usual, and also add the `prometheus-old` instance as a remote-read target.
-
-   ```yaml
-    prometheus.yml:
-      ...
-      remote_read:
-      - url: http://prometheus-old/api/v1/read
-      ...
-   ```
-
-   Old data will be available when you query the new prometheus instance.
-
-## Configuration
-
-See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To see all configurable options with detailed comments, visit the chart's [values.yaml](./values.yaml), or run these configuration commands:
-
-```console
-helm show values prometheus-community/prometheus
-```
-
-You may similarly use the above configuration commands on each chart [dependency](#dependencies) to see it's configurations.
-
-### Scraping Pod Metrics via Annotations
-
-This chart uses a default configuration that causes prometheus to scrape a variety of kubernetes resource types, provided they have the correct annotations. In this section we describe how to configure pods to be scraped; for information on how other resource types can be scraped you can do a `helm template` to get the kubernetes resource definitions, and then reference the prometheus configuration in the ConfigMap against the prometheus documentation for [relabel_config](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config) and [kubernetes_sd_config](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#kubernetes_sd_config).
-
-In order to get prometheus to scrape pods, you must add annotations to the the pods as below:
-
-```yaml
-metadata:
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: /metrics
-    prometheus.io/port: "8080"
-```
-
-You should adjust `prometheus.io/path` based on the URL that your pod serves metrics from. `prometheus.io/port` should be set to the port that your pod serves metrics from. Note that the values for `prometheus.io/scrape` and `prometheus.io/port` must be enclosed in double quotes.
-
-### Sharing Alerts Between Services
-
-Note that when [installing](#install-chart) or [upgrading](#upgrading-chart) you may use multiple values override files. This is particularly useful when you have alerts belonging to multiple services in the cluster. For example,
-
-```yaml
-# values.yaml
-# ...
-
-# service1-alert.yaml
-serverFiles:
-  alerts:
-    service1:
-      - alert: anAlert
-      # ...
-
-# service2-alert.yaml
-serverFiles:
-  alerts:
-    service2:
-      - alert: anAlert
-      # ...
-```
-
-```console
-helm install [RELEASE_NAME] prometheus-community/prometheus -f values.yaml -f service1-alert.yaml -f service2-alert.yaml
-```
-
-### RBAC Configuration
-
-Roles and RoleBindings resources will be created automatically for `server` service.
-
-To manually setup RBAC you need to set the parameter `rbac.create=false` and specify the service account to be used for each service by setting the parameters: `serviceAccounts.{{ component }}.create` to `false` and `serviceAccounts.{{ component }}.name` to the name of a pre-existing service account.
-
-> **Tip**: You can refer to the default `*-clusterrole.yaml` and `*-clusterrolebinding.yaml` files in [templates](templates/) to customize your own.
-
-### ConfigMap Files
-
-AlertManager is configured through [alertmanager.yml](https://prometheus.io/docs/alerting/configuration/). This file (and any others listed in `alertmanagerFiles`) will be mounted into the `alertmanager` pod.
-
-Prometheus is configured through [prometheus.yml](https://prometheus.io/docs/operating/configuration/). This file (and any others listed in `serverFiles`) will be mounted into the `server` pod.
-
-### Ingress TLS
-
-If your cluster allows automatic creation/retrieval of TLS certificates (e.g. [cert-manager](https://github.com/jetstack/cert-manager)), please refer to the documentation for that mechanism.
-
-To manually configure TLS, first create/retrieve a key & certificate pair for the address(es) you wish to protect. Then create a TLS secret in the namespace:
-
-```console
-kubectl create secret tls prometheus-server-tls --cert=path/to/tls.cert --key=path/to/tls.key
-```
-
-Include the secret's name, along with the desired hostnames, in the alertmanager/server Ingress TLS section of your custom `values.yaml` file:
-
-```yaml
-server:
-  ingress:
-    ## If true, Prometheus server Ingress will be created
-    ##
-    enabled: true
-
-    ## Prometheus server Ingress hostnames
-    ## Must be provided if Ingress is enabled
-    ##
-    hosts:
-      - prometheus.domain.com
-
-    ## Prometheus server Ingress TLS configuration
-    ## Secrets must be manually created in the namespace
-    ##
-    tls:
-      - secretName: prometheus-server-tls
-        hosts:
-          - prometheus.domain.com
-```
-
-### NetworkPolicy
-
-Enabling Network Policy for Prometheus will secure connections to Alert Manager and Kube State Metrics by only accepting connections from Prometheus Server. All inbound connections to Prometheus Server are still allowed.
-
-To enable network policy for Prometheus, install a networking plugin that implements the Kubernetes NetworkPolicy spec, and set `networkPolicy.enabled` to true.
-
-If NetworkPolicy is enabled for Prometheus' scrape targets, you may also need to manually create a networkpolicy which allows it.
+# prometheus
+
+![Version: 15.5.4](https://img.shields.io/badge/Version-15.5.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.34.0](https://img.shields.io/badge/AppVersion-2.34.0-informational?style=flat-square)
+
+Prometheus is a monitoring system and time series database.
+
+**Homepage:** <https://prometheus.io/>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| gianrubio | <gianrubio@gmail.com> |  |
+| zanhsieh | <zanhsieh@gmail.com> |  |
+| Xtigyro | <miroslav.hadzhiev@gmail.com> |  |
+| monotek | <monotek23@gmail.com> |  |
+| naseemkullah | <naseem@transit.app> |  |
+
+## Source Code
+
+* <https://github.com/prometheus/alertmanager>
+* <https://github.com/prometheus/prometheus>
+* <https://github.com/prometheus/pushgateway>
+* <https://github.com/prometheus/node_exporter>
+* <https://github.com/kubernetes/kube-state-metrics>
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://prometheus-community.github.io/helm-charts | kube-state-metrics | 4.4.* |
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| alertRelabelConfigs | string | `nil` |  |
+| alertmanager.affinity | object | `{}` |  |
+| alertmanager.baseURL | string | `"http://localhost:9093"` |  |
+| alertmanager.clusterPeers | list | `[]` |  |
+| alertmanager.configFileName | string | `"alertmanager.yml"` |  |
+| alertmanager.configFromSecret | string | `""` |  |
+| alertmanager.configMapOverrideName | string | `""` |  |
+| alertmanager.deploymentAnnotations | object | `{}` |  |
+| alertmanager.dnsConfig | object | `{}` |  |
+| alertmanager.emptyDir.sizeLimit | string | `""` |  |
+| alertmanager.enabled | bool | `true` |  |
+| alertmanager.extraArgs | object | `{}` |  |
+| alertmanager.extraConfigmapMounts | list | `[]` |  |
+| alertmanager.extraEnv | object | `{}` |  |
+| alertmanager.extraInitContainers | list | `[]` |  |
+| alertmanager.extraSecretMounts | list | `[]` |  |
+| alertmanager.image.pullPolicy | string | `"IfNotPresent"` |  |
+| alertmanager.image.repository | string | `"quay.io/prometheus/alertmanager"` |  |
+| alertmanager.image.tag | string | `"v0.23.0"` |  |
+| alertmanager.ingress.annotations | object | `{}` |  |
+| alertmanager.ingress.enabled | bool | `false` |  |
+| alertmanager.ingress.extraLabels | object | `{}` |  |
+| alertmanager.ingress.extraPaths | list | `[]` |  |
+| alertmanager.ingress.hosts | list | `[]` |  |
+| alertmanager.ingress.path | string | `"/"` |  |
+| alertmanager.ingress.pathType | string | `"Prefix"` |  |
+| alertmanager.ingress.tls | list | `[]` |  |
+| alertmanager.name | string | `"alertmanager"` |  |
+| alertmanager.nodeSelector | object | `{}` |  |
+| alertmanager.persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| alertmanager.persistentVolume.annotations | object | `{}` |  |
+| alertmanager.persistentVolume.enabled | bool | `true` |  |
+| alertmanager.persistentVolume.existingClaim | string | `""` |  |
+| alertmanager.persistentVolume.mountPath | string | `"/data"` |  |
+| alertmanager.persistentVolume.size | string | `"2Gi"` |  |
+| alertmanager.persistentVolume.subPath | string | `""` |  |
+| alertmanager.podAnnotations | object | `{}` |  |
+| alertmanager.podDisruptionBudget.enabled | bool | `false` |  |
+| alertmanager.podDisruptionBudget.maxUnavailable | int | `1` |  |
+| alertmanager.podLabels | object | `{}` |  |
+| alertmanager.podSecurityPolicy.annotations | object | `{}` |  |
+| alertmanager.prefixURL | string | `""` |  |
+| alertmanager.priorityClassName | string | `""` |  |
+| alertmanager.probeHeaders | list | `[]` |  |
+| alertmanager.replicaCount | int | `1` |  |
+| alertmanager.resources | object | `{}` |  |
+| alertmanager.securityContext.fsGroup | int | `65534` |  |
+| alertmanager.securityContext.runAsGroup | int | `65534` |  |
+| alertmanager.securityContext.runAsNonRoot | bool | `true` |  |
+| alertmanager.securityContext.runAsUser | int | `65534` |  |
+| alertmanager.service.annotations | object | `{}` |  |
+| alertmanager.service.clusterIP | string | `""` |  |
+| alertmanager.service.externalIPs | list | `[]` |  |
+| alertmanager.service.labels | object | `{}` |  |
+| alertmanager.service.loadBalancerIP | string | `""` |  |
+| alertmanager.service.loadBalancerSourceRanges | list | `[]` |  |
+| alertmanager.service.servicePort | int | `80` |  |
+| alertmanager.service.sessionAffinity | string | `"None"` |  |
+| alertmanager.service.type | string | `"ClusterIP"` |  |
+| alertmanager.statefulSet.annotations | object | `{}` |  |
+| alertmanager.statefulSet.enabled | bool | `false` |  |
+| alertmanager.statefulSet.headless.annotations | object | `{}` |  |
+| alertmanager.statefulSet.headless.enableMeshPeer | bool | `false` |  |
+| alertmanager.statefulSet.headless.labels | object | `{}` |  |
+| alertmanager.statefulSet.headless.servicePort | int | `80` |  |
+| alertmanager.statefulSet.labels | object | `{}` |  |
+| alertmanager.statefulSet.podManagementPolicy | string | `"OrderedReady"` |  |
+| alertmanager.tolerations | list | `[]` |  |
+| alertmanager.useClusterRole | bool | `true` |  |
+| alertmanager.useExistingRole | bool | `false` |  |
+| alertmanagerFiles."alertmanager.yml".global | object | `{}` |  |
+| alertmanagerFiles."alertmanager.yml".receivers[0].name | string | `"default-receiver"` |  |
+| alertmanagerFiles."alertmanager.yml".route.group_interval | string | `"5m"` |  |
+| alertmanagerFiles."alertmanager.yml".route.group_wait | string | `"10s"` |  |
+| alertmanagerFiles."alertmanager.yml".route.receiver | string | `"default-receiver"` |  |
+| alertmanagerFiles."alertmanager.yml".route.repeat_interval | string | `"3h"` |  |
+| configmapReload.alertmanager.enabled | bool | `true` |  |
+| configmapReload.alertmanager.extraArgs | object | `{}` |  |
+| configmapReload.alertmanager.extraConfigmapMounts | list | `[]` |  |
+| configmapReload.alertmanager.extraVolumeDirs | list | `[]` |  |
+| configmapReload.alertmanager.image.pullPolicy | string | `"IfNotPresent"` |  |
+| configmapReload.alertmanager.image.repository | string | `"jimmidyson/configmap-reload"` |  |
+| configmapReload.alertmanager.image.tag | string | `"v0.5.0"` |  |
+| configmapReload.alertmanager.name | string | `"configmap-reload"` |  |
+| configmapReload.alertmanager.resources | object | `{}` |  |
+| configmapReload.prometheus.enabled | bool | `true` |  |
+| configmapReload.prometheus.extraArgs | object | `{}` |  |
+| configmapReload.prometheus.extraConfigmapMounts | list | `[]` |  |
+| configmapReload.prometheus.extraVolumeDirs | list | `[]` |  |
+| configmapReload.prometheus.image.pullPolicy | string | `"IfNotPresent"` |  |
+| configmapReload.prometheus.image.repository | string | `"jimmidyson/configmap-reload"` |  |
+| configmapReload.prometheus.image.tag | string | `"v0.5.0"` |  |
+| configmapReload.prometheus.name | string | `"configmap-reload"` |  |
+| configmapReload.prometheus.resources | object | `{}` |  |
+| extraScrapeConfigs | string | `nil` |  |
+| forceNamespace | string | `nil` |  |
+| imagePullSecrets | string | `nil` |  |
+| kubeStateMetrics.enabled | bool | `true` |  |
+| networkPolicy.enabled | bool | `false` |  |
+| nodeExporter.dnsConfig | object | `{}` |  |
+| nodeExporter.enabled | bool | `true` |  |
+| nodeExporter.extraArgs | object | `{}` |  |
+| nodeExporter.extraConfigmapMounts | list | `[]` |  |
+| nodeExporter.extraHostPathMounts | list | `[]` |  |
+| nodeExporter.extraInitContainers | list | `[]` |  |
+| nodeExporter.hostNetwork | bool | `true` |  |
+| nodeExporter.hostPID | bool | `true` |  |
+| nodeExporter.hostRootfs | bool | `true` |  |
+| nodeExporter.image.pullPolicy | string | `"IfNotPresent"` |  |
+| nodeExporter.image.repository | string | `"quay.io/prometheus/node-exporter"` |  |
+| nodeExporter.image.tag | string | `"v1.3.0"` |  |
+| nodeExporter.name | string | `"node-exporter"` |  |
+| nodeExporter.nodeSelector | object | `{}` |  |
+| nodeExporter.pod.labels | object | `{}` |  |
+| nodeExporter.podAnnotations | object | `{}` |  |
+| nodeExporter.podDisruptionBudget.enabled | bool | `false` |  |
+| nodeExporter.podDisruptionBudget.maxUnavailable | int | `1` |  |
+| nodeExporter.podSecurityPolicy.annotations | object | `{}` |  |
+| nodeExporter.priorityClassName | string | `""` |  |
+| nodeExporter.resources | object | `{}` |  |
+| nodeExporter.securityContext.fsGroup | int | `65534` |  |
+| nodeExporter.securityContext.runAsGroup | int | `65534` |  |
+| nodeExporter.securityContext.runAsNonRoot | bool | `true` |  |
+| nodeExporter.securityContext.runAsUser | int | `65534` |  |
+| nodeExporter.service.annotations."prometheus.io/scrape" | string | `"true"` |  |
+| nodeExporter.service.clusterIP | string | `"None"` |  |
+| nodeExporter.service.externalIPs | list | `[]` |  |
+| nodeExporter.service.hostPort | int | `9100` |  |
+| nodeExporter.service.labels | object | `{}` |  |
+| nodeExporter.service.loadBalancerIP | string | `""` |  |
+| nodeExporter.service.loadBalancerSourceRanges | list | `[]` |  |
+| nodeExporter.service.servicePort | int | `9100` |  |
+| nodeExporter.service.type | string | `"ClusterIP"` |  |
+| nodeExporter.tolerations | list | `[]` |  |
+| nodeExporter.updateStrategy.type | string | `"RollingUpdate"` |  |
+| podSecurityPolicy.enabled | bool | `false` |  |
+| pushgateway.deploymentAnnotations | object | `{}` |  |
+| pushgateway.dnsConfig | object | `{}` |  |
+| pushgateway.enabled | bool | `true` |  |
+| pushgateway.extraArgs | object | `{}` |  |
+| pushgateway.extraInitContainers | list | `[]` |  |
+| pushgateway.image.pullPolicy | string | `"IfNotPresent"` |  |
+| pushgateway.image.repository | string | `"prom/pushgateway"` |  |
+| pushgateway.image.tag | string | `"v1.4.2"` |  |
+| pushgateway.ingress.annotations | object | `{}` |  |
+| pushgateway.ingress.enabled | bool | `false` |  |
+| pushgateway.ingress.extraPaths | list | `[]` |  |
+| pushgateway.ingress.hosts | list | `[]` |  |
+| pushgateway.ingress.path | string | `"/"` |  |
+| pushgateway.ingress.pathType | string | `"Prefix"` |  |
+| pushgateway.ingress.tls | list | `[]` |  |
+| pushgateway.name | string | `"pushgateway"` |  |
+| pushgateway.nodeSelector | object | `{}` |  |
+| pushgateway.persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| pushgateway.persistentVolume.annotations | object | `{}` |  |
+| pushgateway.persistentVolume.enabled | bool | `false` |  |
+| pushgateway.persistentVolume.existingClaim | string | `""` |  |
+| pushgateway.persistentVolume.mountPath | string | `"/data"` |  |
+| pushgateway.persistentVolume.size | string | `"2Gi"` |  |
+| pushgateway.persistentVolume.subPath | string | `""` |  |
+| pushgateway.podAnnotations | object | `{}` |  |
+| pushgateway.podDisruptionBudget.enabled | bool | `false` |  |
+| pushgateway.podDisruptionBudget.maxUnavailable | int | `1` |  |
+| pushgateway.podLabels | object | `{}` |  |
+| pushgateway.podSecurityPolicy.annotations | object | `{}` |  |
+| pushgateway.priorityClassName | string | `""` |  |
+| pushgateway.replicaCount | int | `1` |  |
+| pushgateway.resources | object | `{}` |  |
+| pushgateway.securityContext.runAsNonRoot | bool | `true` |  |
+| pushgateway.securityContext.runAsUser | int | `65534` |  |
+| pushgateway.service.annotations."prometheus.io/probe" | string | `"pushgateway"` |  |
+| pushgateway.service.clusterIP | string | `""` |  |
+| pushgateway.service.externalIPs | list | `[]` |  |
+| pushgateway.service.labels | object | `{}` |  |
+| pushgateway.service.loadBalancerIP | string | `""` |  |
+| pushgateway.service.loadBalancerSourceRanges | list | `[]` |  |
+| pushgateway.service.servicePort | int | `9091` |  |
+| pushgateway.service.type | string | `"ClusterIP"` |  |
+| pushgateway.tolerations | list | `[]` |  |
+| pushgateway.verticalAutoscaler.enabled | bool | `false` |  |
+| rbac.create | bool | `true` |  |
+| ruleFiles | object | `{}` |  |
+| server.affinity | object | `{}` |  |
+| server.alertmanagers | list | `[]` |  |
+| server.baseURL | string | `""` |  |
+| server.configMapOverrideName | string | `""` |  |
+| server.configPath | string | `"/etc/config/prometheus.yml"` |  |
+| server.defaultFlagsOverride | list | `[]` |  |
+| server.deploymentAnnotations | object | `{}` |  |
+| server.dnsConfig | object | `{}` |  |
+| server.dnsPolicy | string | `"ClusterFirst"` |  |
+| server.emptyDir.sizeLimit | string | `""` |  |
+| server.enableServiceLinks | bool | `true` |  |
+| server.enabled | bool | `true` |  |
+| server.env | list | `[]` |  |
+| server.extraArgs | object | `{}` |  |
+| server.extraConfigmapMounts | list | `[]` |  |
+| server.extraFlags[0] | string | `"web.enable-lifecycle"` |  |
+| server.extraHostPathMounts | list | `[]` |  |
+| server.extraInitContainers | list | `[]` |  |
+| server.extraSecretMounts | list | `[]` |  |
+| server.extraVolumeMounts | list | `[]` |  |
+| server.extraVolumes | list | `[]` |  |
+| server.global.evaluation_interval | string | `"1m"` |  |
+| server.global.scrape_interval | string | `"1m"` |  |
+| server.global.scrape_timeout | string | `"10s"` |  |
+| server.hostAliases | list | `[]` |  |
+| server.hostNetwork | bool | `false` |  |
+| server.image.pullPolicy | string | `"IfNotPresent"` |  |
+| server.image.repository | string | `"quay.io/prometheus/prometheus"` |  |
+| server.image.tag | string | `"v2.34.0"` |  |
+| server.ingress.annotations | object | `{}` |  |
+| server.ingress.enabled | bool | `false` |  |
+| server.ingress.extraLabels | object | `{}` |  |
+| server.ingress.extraPaths | list | `[]` |  |
+| server.ingress.hosts | list | `[]` |  |
+| server.ingress.path | string | `"/"` |  |
+| server.ingress.pathType | string | `"Prefix"` |  |
+| server.ingress.tls | list | `[]` |  |
+| server.livenessProbeFailureThreshold | int | `3` |  |
+| server.livenessProbeInitialDelay | int | `30` |  |
+| server.livenessProbePeriodSeconds | int | `15` |  |
+| server.livenessProbeSuccessThreshold | int | `1` |  |
+| server.livenessProbeTimeout | int | `10` |  |
+| server.name | string | `"server"` |  |
+| server.nodeSelector | object | `{}` |  |
+| server.persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| server.persistentVolume.annotations | object | `{}` |  |
+| server.persistentVolume.enabled | bool | `true` |  |
+| server.persistentVolume.existingClaim | string | `""` |  |
+| server.persistentVolume.mountPath | string | `"/data"` |  |
+| server.persistentVolume.size | string | `"8Gi"` |  |
+| server.persistentVolume.subPath | string | `""` |  |
+| server.podAnnotations | object | `{}` |  |
+| server.podDisruptionBudget.enabled | bool | `false` |  |
+| server.podDisruptionBudget.maxUnavailable | int | `1` |  |
+| server.podLabels | object | `{}` |  |
+| server.podSecurityPolicy.annotations | object | `{}` |  |
+| server.prefixURL | string | `""` |  |
+| server.priorityClassName | string | `""` |  |
+| server.probeHeaders | list | `[]` |  |
+| server.probeScheme | string | `"HTTP"` |  |
+| server.readinessProbeFailureThreshold | int | `3` |  |
+| server.readinessProbeInitialDelay | int | `30` |  |
+| server.readinessProbePeriodSeconds | int | `5` |  |
+| server.readinessProbeSuccessThreshold | int | `1` |  |
+| server.readinessProbeTimeout | int | `4` |  |
+| server.remoteRead | list | `[]` |  |
+| server.remoteWrite | list | `[]` |  |
+| server.replicaCount | int | `1` |  |
+| server.resources | object | `{}` |  |
+| server.retention | string | `"15d"` |  |
+| server.securityContext.fsGroup | int | `65534` |  |
+| server.securityContext.runAsGroup | int | `65534` |  |
+| server.securityContext.runAsNonRoot | bool | `true` |  |
+| server.securityContext.runAsUser | int | `65534` |  |
+| server.service.annotations | object | `{}` |  |
+| server.service.clusterIP | string | `""` |  |
+| server.service.externalIPs | list | `[]` |  |
+| server.service.gRPC.enabled | bool | `false` |  |
+| server.service.gRPC.servicePort | int | `10901` |  |
+| server.service.labels | object | `{}` |  |
+| server.service.loadBalancerIP | string | `""` |  |
+| server.service.loadBalancerSourceRanges | list | `[]` |  |
+| server.service.servicePort | int | `80` |  |
+| server.service.sessionAffinity | string | `"None"` |  |
+| server.service.statefulsetReplica.enabled | bool | `false` |  |
+| server.service.statefulsetReplica.replica | int | `0` |  |
+| server.service.type | string | `"ClusterIP"` |  |
+| server.sidecarContainers | object | `{}` |  |
+| server.sidecarTemplateValues | object | `{}` |  |
+| server.startupProbe.enabled | bool | `false` |  |
+| server.startupProbe.failureThreshold | int | `30` |  |
+| server.startupProbe.periodSeconds | int | `5` |  |
+| server.startupProbe.timeoutSeconds | int | `10` |  |
+| server.statefulSet.annotations | object | `{}` |  |
+| server.statefulSet.enabled | bool | `false` |  |
+| server.statefulSet.headless.annotations | object | `{}` |  |
+| server.statefulSet.headless.gRPC.enabled | bool | `false` |  |
+| server.statefulSet.headless.gRPC.servicePort | int | `10901` |  |
+| server.statefulSet.headless.labels | object | `{}` |  |
+| server.statefulSet.headless.servicePort | int | `80` |  |
+| server.statefulSet.labels | object | `{}` |  |
+| server.statefulSet.podManagementPolicy | string | `"OrderedReady"` |  |
+| server.storagePath | string | `""` |  |
+| server.tcpSocketProbeEnabled | bool | `false` |  |
+| server.terminationGracePeriodSeconds | int | `300` |  |
+| server.tolerations | list | `[]` |  |
+| server.verticalAutoscaler.enabled | bool | `false` |  |
+| serverFiles."alerting_rules.yml" | object | `{}` |  |
+| serverFiles."prometheus.yml".rule_files[0] | string | `"/etc/config/recording_rules.yml"` |  |
+| serverFiles."prometheus.yml".rule_files[1] | string | `"/etc/config/alerting_rules.yml"` |  |
+| serverFiles."prometheus.yml".rule_files[2] | string | `"/etc/config/rules"` |  |
+| serverFiles."prometheus.yml".rule_files[3] | string | `"/etc/config/alerts"` |  |
+| serverFiles."prometheus.yml".scrape_configs[0].job_name | string | `"prometheus"` |  |
+| serverFiles."prometheus.yml".scrape_configs[0].static_configs[0].targets[0] | string | `"localhost:9090"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].bearer_token_file | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].job_name | string | `"kubernetes-apiservers"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].kubernetes_sd_configs[0].role | string | `"endpoints"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].relabel_configs[0].action | string | `"keep"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].relabel_configs[0].regex | string | `"default;kubernetes;https"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].relabel_configs[0].source_labels[0] | string | `"__meta_kubernetes_namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].relabel_configs[0].source_labels[1] | string | `"__meta_kubernetes_service_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].relabel_configs[0].source_labels[2] | string | `"__meta_kubernetes_endpoint_port_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].scheme | string | `"https"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].tls_config.ca_file | string | `"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"` |  |
+| serverFiles."prometheus.yml".scrape_configs[1].tls_config.insecure_skip_verify | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].bearer_token_file | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].job_name | string | `"kubernetes-nodes"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].kubernetes_sd_configs[0].role | string | `"node"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[0].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[0].regex | string | `"__meta_kubernetes_node_label_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[1].replacement | string | `"kubernetes.default.svc:443"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[1].target_label | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[2].regex | string | `"(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[2].replacement | string | `"/api/v1/nodes/$1/proxy/metrics"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[2].source_labels[0] | string | `"__meta_kubernetes_node_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].relabel_configs[2].target_label | string | `"__metrics_path__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].scheme | string | `"https"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].tls_config.ca_file | string | `"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"` |  |
+| serverFiles."prometheus.yml".scrape_configs[2].tls_config.insecure_skip_verify | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].bearer_token_file | string | `"/var/run/secrets/kubernetes.io/serviceaccount/token"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].job_name | string | `"kubernetes-nodes-cadvisor"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].kubernetes_sd_configs[0].role | string | `"node"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[0].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[0].regex | string | `"__meta_kubernetes_node_label_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[1].replacement | string | `"kubernetes.default.svc:443"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[1].target_label | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[2].regex | string | `"(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[2].replacement | string | `"/api/v1/nodes/$1/proxy/metrics/cadvisor"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[2].source_labels[0] | string | `"__meta_kubernetes_node_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].relabel_configs[2].target_label | string | `"__metrics_path__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].scheme | string | `"https"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].tls_config.ca_file | string | `"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"` |  |
+| serverFiles."prometheus.yml".scrape_configs[3].tls_config.insecure_skip_verify | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].job_name | string | `"kubernetes-service-endpoints"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].kubernetes_sd_configs[0].role | string | `"endpoints"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[0].action | string | `"keep"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[0].regex | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[0].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_scrape"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[1].action | string | `"drop"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[1].regex | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[1].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_scrape_slow"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[2].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[2].regex | string | `"(https?)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[2].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_scheme"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[2].target_label | string | `"__scheme__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[3].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[3].regex | string | `"(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[3].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_path"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[3].target_label | string | `"__metrics_path__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[4].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[4].regex | string | `"([^:]+)(?::\\d+)?;(\\d+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[4].replacement | string | `"$1:$2"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[4].source_labels[0] | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[4].source_labels[1] | string | `"__meta_kubernetes_service_annotation_prometheus_io_port"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[4].target_label | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[5].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[5].regex | string | `"__meta_kubernetes_service_annotation_prometheus_io_param_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[5].replacement | string | `"__param_$1"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[6].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[6].regex | string | `"__meta_kubernetes_service_label_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[7].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[7].source_labels[0] | string | `"__meta_kubernetes_namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[7].target_label | string | `"namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[8].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[8].source_labels[0] | string | `"__meta_kubernetes_service_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[8].target_label | string | `"service"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[9].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[9].source_labels[0] | string | `"__meta_kubernetes_pod_node_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[4].relabel_configs[9].target_label | string | `"node"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].job_name | string | `"kubernetes-service-endpoints-slow"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].kubernetes_sd_configs[0].role | string | `"endpoints"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[0].action | string | `"keep"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[0].regex | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[0].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_scrape_slow"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[1].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[1].regex | string | `"(https?)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[1].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_scheme"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[1].target_label | string | `"__scheme__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[2].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[2].regex | string | `"(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[2].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_path"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[2].target_label | string | `"__metrics_path__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[3].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[3].regex | string | `"([^:]+)(?::\\d+)?;(\\d+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[3].replacement | string | `"$1:$2"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[3].source_labels[0] | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[3].source_labels[1] | string | `"__meta_kubernetes_service_annotation_prometheus_io_port"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[3].target_label | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[4].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[4].regex | string | `"__meta_kubernetes_service_annotation_prometheus_io_param_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[4].replacement | string | `"__param_$1"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[5].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[5].regex | string | `"__meta_kubernetes_service_label_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[6].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[6].source_labels[0] | string | `"__meta_kubernetes_namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[6].target_label | string | `"namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[7].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[7].source_labels[0] | string | `"__meta_kubernetes_service_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[7].target_label | string | `"service"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[8].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[8].source_labels[0] | string | `"__meta_kubernetes_pod_node_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].relabel_configs[8].target_label | string | `"node"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].scrape_interval | string | `"5m"` |  |
+| serverFiles."prometheus.yml".scrape_configs[5].scrape_timeout | string | `"30s"` |  |
+| serverFiles."prometheus.yml".scrape_configs[6].honor_labels | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[6].job_name | string | `"prometheus-pushgateway"` |  |
+| serverFiles."prometheus.yml".scrape_configs[6].kubernetes_sd_configs[0].role | string | `"service"` |  |
+| serverFiles."prometheus.yml".scrape_configs[6].relabel_configs[0].action | string | `"keep"` |  |
+| serverFiles."prometheus.yml".scrape_configs[6].relabel_configs[0].regex | string | `"pushgateway"` |  |
+| serverFiles."prometheus.yml".scrape_configs[6].relabel_configs[0].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_probe"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].job_name | string | `"kubernetes-services"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].kubernetes_sd_configs[0].role | string | `"service"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].metrics_path | string | `"/probe"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].params.module[0] | string | `"http_2xx"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[0].action | string | `"keep"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[0].regex | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[0].source_labels[0] | string | `"__meta_kubernetes_service_annotation_prometheus_io_probe"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[1].source_labels[0] | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[1].target_label | string | `"__param_target"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[2].replacement | string | `"blackbox"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[2].target_label | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[3].source_labels[0] | string | `"__param_target"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[3].target_label | string | `"instance"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[4].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[4].regex | string | `"__meta_kubernetes_service_label_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[5].source_labels[0] | string | `"__meta_kubernetes_namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[5].target_label | string | `"namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[6].source_labels[0] | string | `"__meta_kubernetes_service_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[7].relabel_configs[6].target_label | string | `"service"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].job_name | string | `"kubernetes-pods"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].kubernetes_sd_configs[0].role | string | `"pod"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[0].action | string | `"keep"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[0].regex | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[0].source_labels[0] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_scrape"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[1].action | string | `"drop"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[1].regex | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[1].source_labels[0] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_scrape_slow"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[2].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[2].regex | string | `"(https?)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[2].source_labels[0] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_scheme"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[2].target_label | string | `"__scheme__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[3].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[3].regex | string | `"(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[3].source_labels[0] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_path"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[3].target_label | string | `"__metrics_path__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[4].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[4].regex | string | `"([^:]+)(?::\\d+)?;(\\d+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[4].replacement | string | `"$1:$2"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[4].source_labels[0] | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[4].source_labels[1] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_port"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[4].target_label | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[5].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[5].regex | string | `"__meta_kubernetes_pod_annotation_prometheus_io_param_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[5].replacement | string | `"__param_$1"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[6].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[6].regex | string | `"__meta_kubernetes_pod_label_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[7].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[7].source_labels[0] | string | `"__meta_kubernetes_namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[7].target_label | string | `"namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[8].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[8].source_labels[0] | string | `"__meta_kubernetes_pod_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[8].target_label | string | `"pod"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[9].action | string | `"drop"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[9].regex | string | `"Pending|Succeeded|Failed|Completed"` |  |
+| serverFiles."prometheus.yml".scrape_configs[8].relabel_configs[9].source_labels[0] | string | `"__meta_kubernetes_pod_phase"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].job_name | string | `"kubernetes-pods-slow"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].kubernetes_sd_configs[0].role | string | `"pod"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[0].action | string | `"keep"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[0].regex | bool | `true` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[0].source_labels[0] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_scrape_slow"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[1].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[1].regex | string | `"(https?)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[1].source_labels[0] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_scheme"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[1].target_label | string | `"__scheme__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[2].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[2].regex | string | `"(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[2].source_labels[0] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_path"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[2].target_label | string | `"__metrics_path__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[3].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[3].regex | string | `"([^:]+)(?::\\d+)?;(\\d+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[3].replacement | string | `"$1:$2"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[3].source_labels[0] | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[3].source_labels[1] | string | `"__meta_kubernetes_pod_annotation_prometheus_io_port"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[3].target_label | string | `"__address__"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[4].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[4].regex | string | `"__meta_kubernetes_pod_annotation_prometheus_io_param_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[4].replacement | string | `"__param_$1"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[5].action | string | `"labelmap"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[5].regex | string | `"__meta_kubernetes_pod_label_(.+)"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[6].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[6].source_labels[0] | string | `"__meta_kubernetes_namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[6].target_label | string | `"namespace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[7].action | string | `"replace"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[7].source_labels[0] | string | `"__meta_kubernetes_pod_name"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[7].target_label | string | `"pod"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[8].action | string | `"drop"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[8].regex | string | `"Pending|Succeeded|Failed|Completed"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].relabel_configs[8].source_labels[0] | string | `"__meta_kubernetes_pod_phase"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].scrape_interval | string | `"5m"` |  |
+| serverFiles."prometheus.yml".scrape_configs[9].scrape_timeout | string | `"30s"` |  |
+| serverFiles."recording_rules.yml" | object | `{}` |  |
+| serverFiles.alerts | object | `{}` |  |
+| serverFiles.rules | object | `{}` |  |
+| serviceAccounts.alertmanager.annotations | object | `{}` |  |
+| serviceAccounts.alertmanager.create | bool | `true` |  |
+| serviceAccounts.alertmanager.name | string | `nil` |  |
+| serviceAccounts.nodeExporter.annotations | object | `{}` |  |
+| serviceAccounts.nodeExporter.create | bool | `true` |  |
+| serviceAccounts.nodeExporter.name | string | `nil` |  |
+| serviceAccounts.pushgateway.annotations | object | `{}` |  |
+| serviceAccounts.pushgateway.create | bool | `true` |  |
+| serviceAccounts.pushgateway.name | string | `nil` |  |
+| serviceAccounts.server.annotations | object | `{}` |  |
+| serviceAccounts.server.create | bool | `true` |  |
+| serviceAccounts.server.name | string | `nil` |  |
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.9.1](https://github.com/norwoodj/helm-docs/releases/v1.9.1)

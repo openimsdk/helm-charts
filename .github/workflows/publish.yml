@@ -4,11 +4,13 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "charts/**"
+    # paths:
+    #   - "charts/**"
 
 permissions:
-  contents: read
+  contents: write # to push chart release and create a release (helm/chart-releaser-action)
+  packages: write # needed for ghcr access
+  id-token: write # needed for keyless signing
 
 jobs:
   publish:
@@ -27,19 +29,18 @@ jobs:
         with:
           version: v3.10.1 # Also update in lint-and-test.yaml
 
-      - name: Add dependency chart repos
-        run: |
-          helm repo add dandydeveloper https://dandydeveloper.github.io/charts/
+    #   - name: Add dependency chart repos
+    #     run: |
+    #       helm repo add openim https://openimsdk.github.io/helm-charts
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      ## This is required to consider the old Circle-CI Index and to stay compatible with all the old releases.
-      - name: Fetch current Chart Index
-        run: |
-          git checkout origin/gh-pages index.yaml
+      - name: Fetch history
+        run: git checkout origin/gh-pages index.yaml
+        continue-on-error: true
 
       # The GitHub repository secret `PGP_PRIVATE_KEY` contains the private key
       # in ASCII-armored format. To export a (new) key, run this command:
@@ -57,9 +58,19 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
         with:
+          charts_dir: charts
           config: "./.github/configs/cr.yaml"
+          packages_with_index: true
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.BOT_GITHUB_TOKEN }}"
+          CR_GENERATE_RELEASE_NOTES: true
+        continue-on-error: true
+
+      - name: Publish Helm charts
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
 
       - name: Login to GHCR
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
@@ -77,3 +88,5 @@ jobs:
             fi
             helm push "${pkg}" oci://ghcr.io/${{ github.repository }}
           done
+        env:
+          HELM_EXPERIMENTAL_OCI: 1

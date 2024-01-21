@@ -6,7 +6,7 @@ target-branch: main
 chart-dirs:
   - charts
 chart-repos:
-  - dandydeveloper=https://dandydeveloper.github.io/charts/
+  - openim=https://openimsdk.github.io/helm-charts/
 validate-chart-schema: false
 validate-maintainers: true
 validate-yaml: true

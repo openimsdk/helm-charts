@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+        contents: write
+        pull-requests: write
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -58,6 +61,7 @@ jobs:
 
         # Install Redis
         helm install im-redis infra/redis -f infra/redis-config.yaml -n openim --create-namespace
+
       continue-on-error: true
 
     - name: Install OpenIM Services
@@ -74,10 +78,83 @@ jobs:
         # Admin Frontend 安装
         helm install imadminfront ./charts/openim-admin/ -f k8s-adminfront-config.yaml -n openim
 
+        sleep 60
+
     - name: Test Installation
+      if: github.event_name == 'pull_request'
       run: |
-        kubectl get pod -A
-        kubectl get pods -n openim
+        output_file="/tmp/out.md"
+        echo "## Kubernetes Resources in openim Namespace" > $output_file
+
+        # Function to append Kubernetes resources to Markdown
+        append_k8s_resource() {
+            resource_type=$1
+            echo "<details><summary>openim namespaces get $resource_type</summary>" >> $output_file
+            echo '' >> $output_file
+            echo '```markdown' >> $output_file
+            kubectl get $resource_type -n openim | tee -a $output_file
+            echo '```' >> $output_file
+            echo '</details>' >> $output_file
+        }
+
+        # Append different Kubernetes resources to Markdown
+        append_k8s_resource "pods"
+        append_k8s_resource "deployments"
+        append_k8s_resource "services"
+        append_k8s_resource "replicasets"
+        append_k8s_resource "statefulsets"
+        append_k8s_resource "configmaps"
+        append_k8s_resource "secrets"
+
+    - name: Comment PR with message
+      uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
+      id: nrt_message
+      with:
+        message: |
+          Current branch is `${{ github.head_ref }}`.
+          _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+        comment_tag: nrt_message
+        reactions: eyes, rocket
+        mode: recreate
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+    - name: Comment PR with message that will be deleted
+      uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
+      with:
+        message: |
+          This PR is being built... 
+        comment_tag: nrt_message_delete
+        reactions: eyes
+        mode: delete
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+    - name: Comment PR with file
+      uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
+      with:
+        filePath: /tmp/out.md
+        comment_tag: nrt_file
+        reactions: eyes, rocket
+        mode: recreate
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+    - name: Do not comment PR if not exists
+      uses: thollander/actions-comment-pull-request@v2
+      if: github.event_name == 'pull_request'
+      with:
+        message: Should not be printed
+        comment_tag: nrt_create_if_not_exists
+        create_if_not_exists: false
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+    - name: Check outputs
+      if: github.event_name == 'pull_request'
+      run: |
+        echo "id : ${{ steps.nrt_message.outputs.id }}"
+        echo "body : ${{ steps.nrt_message.outputs.body }}"
+        echo "html_url : ${{ steps.nrt_message.outputs.html_url }}"
 
     - name: Cleanup
       if: always()

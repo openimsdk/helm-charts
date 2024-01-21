@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Install Helm
       run: |
@@ -20,12 +20,28 @@ jobs:
     - name: Run Helm Template
       id: helm_template
       run: |
-        helm_output=$(helm template ./charts/openim-server -f k8s-open-im-server-config.yaml -f config-imserver.yaml)
-        echo "::set-output name=helm_output::$helm_output"
+        output_file="/tmp/out.md"
+        echo "## Kubernetes Templates in openim Namespace" > $output_file
 
-    - name: Post comment with Helm output
-      run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.helm_template.outputs.helm_output }}"
-      env:
+        # Function to append Kubernetes resources to Markdown
+        append_k8s_resource() {
+            resource_type=$1
+            echo "<details><summary>openim templates get $resource_type</summary>" >> $output_file
+            echo '' >> $output_file
+            echo '```markdown' >> $output_file
+            helm template $resource_type | tee -a $output_file
+            echo '```' >> $output_file
+            echo '</details>' >> $output_file
+        }
+
+        append_k8s_resource "./charts/openim-server -f k8s-open-im-server-config.yaml -f config-imserver.yaml"
+        append_k8s_resource "./charts/openim-chat -f k8s-chat-server-config.yaml -f config-chatserver.yaml"
+
+    - name: Comment PR with file
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: /tmp/out.md
+        comment_tag: nrt_file
+        reactions: eyes, rocket
+        mode: recreate
         GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-        GH_TOKEN: ${{ github.token }}
-      continue-on-error: true
