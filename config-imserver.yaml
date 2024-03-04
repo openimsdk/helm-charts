@@ -45,7 +45,7 @@ config:
     uri: ''
     address: [ im-mongodb:27017 ]
     database: openIM_v3
-    username: root
+    username: openim
     password: openIM123
     maxPoolSize: 100
 
