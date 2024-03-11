@@ -9,6 +9,11 @@ openim-server   0.1.2            release-v3.6
 openim-chat     0.1.2            release-v1.6
 openim-admin    0.1.2            toc-base-open-k8s.35
 openim-web      0.1.1            preview-k8s
+
+**关于helm chart版本管理**
+
++ [版本管理](./docs/contrib/version-zh.md)
+
 ## 系统要求
 
 1. 系统环境要求
@@ -148,4 +153,4 @@ helm install openim-admin -f k8s-adminfront-config.yaml ./charts/openim-admin/ -
 
 
 ## 怎么使用 grafana
-[docs/user-guider-zh.md](docs/user-guide-zh.md)
+[docs/user-guider-zh.md](docs/contrib/user-guide-zh.md)

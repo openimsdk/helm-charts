@@ -12,6 +12,10 @@ openim-admin    0.1.2            toc-base-open-k8s.35
 openim-web      0.1.1            preview-k8s
 ```
 
+**About helm charts version management**
+
++ [version management](./docs/contrib/version.md)
+
 ## Prerequisites
 
 1. System environment required
@@ -167,4 +171,4 @@ helm install openim-admin -f k8s-adminfront-config.yaml ./charts/openim-admin/ -
 ```
 
 ## How to use grafana
-[docs/user-guider.md](docs/user-guide.md)
+[docs/user-guider.md](docs/contrib/user-guide.md)
