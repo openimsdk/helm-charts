@@ -14,38 +14,25 @@ config:
     username: ''
     password: ''
 
-  ###################### Mysql ######################
-  # MySQL configuration
-  # Currently, only single machine setup is supported
-  #
-  # Maximum number of open connections
-  # Maximum number of idle connections
-  # Maximum lifetime in seconds a connection can be reused
-  # Log level: 1=slient, 2=error, 3=warn, 4=info
-  # Slow query threshold in milliseconds
-  mysql:
-    address: [ im-mysql:3306 ]
-    username: root
-    password: openIM123
-    database: openIM_v3
-    maxOpenConn: 1000
-    maxIdleConn: 100
-    maxLifeTime: 60
-    logLevel: 4
-    slowThreshold: 500
-
   ###################### Mongo ######################
   # MongoDB configuration
-  # If uri is not empty, it will be used directly
-  #
-  # MongoDB address for standalone setup, Mongos address for sharded cluster setup
-  # Default MongoDB database name
-  # Maximum connection pool size
+
+  # If uri is not empty, it will be used directly for the MongoDB connection.
+  # This is a complete MongoDB URI string.
+  # Example: mongodb://user:password@host1:port1,host2:port2/dbname?options
   mongo:
     uri: ''
+
+  # List of MongoDB server addresses.
+  # Used for constructing the MongoDB URI if 'uri' above is empty.
+  # For a standalone setup, specify the address of the single server.
+  # For a sharded cluster, specify the addresses of the Mongos servers.
+  # Example: [ '172.28.0.1:37017', '172.28.0.2:37017' ]
+  # Default MongoDB database name
+  # Maximum connection pool size
     address: [ im-mongodb:27017 ]
-    database: openIM_v3
-    username: root
+    database: openim_v3
+    username: openIM
     password: openIM123
     maxPoolSize: 100
 
@@ -122,11 +109,13 @@ config:
       secretAccessKey: "openIM123"
       sessionToken: ''
       signEndpoint: "https://openim1.server.top/im-minio-api"
+      publicRead: false
     cos:
       bucketURL: https://temp-1252357374.cos.ap-chengdu.myqcloud.com
       secretID: ''
       secretKey: ''
       sessionToken: ''
+      publicRead: false
     oss:
       endpoint: "https://oss-cn-chengdu.aliyuncs.com"
       bucket: "demo-9999999"
@@ -134,7 +123,22 @@ config:
       accessKeyID: ''
       accessKeySecret: ''
       sessionToken: ''
-
+      publicRead: false
+    kodo:
+      endpoint: "http://s3.cn-east-1.qiniucs.com"
+      bucket: "demo-9999999"
+      bucketURL: "http://your.domain.com"
+      accessKeyID: ''
+      accessKeySecret: ''
+      sessionToken: ''
+      publicRead: false
+    aws:
+      endpoint: "''" # This might not be necessary unless you're using a custom endpoint
+      region: "us-east-1"
+      bucket: "demo-9999999"
+      accessKeyID: ''
+      accessKeySecret: ''
+      publicRead: false
 
   ###################### RPC Port Configuration ######################
   # RPC service ports
@@ -145,7 +149,7 @@ config:
     openImUserPort: [ 80 ]
     openImFriendPort: [ 80 ]
     openImMessagePort: [ 80 ]
-    openImMessageGatewayPort: [ 88 ]
+    openImMessageGatewayPort: [ 88 ] # This port is used for long connection
     openImGroupPort: [ 80 ]
     openImAuthPort: [ 80 ]
     openImPushPort: [ 80 ]
@@ -227,8 +231,12 @@ config:
   # Built-in app manager user IDs
   # Built-in app manager nicknames
   manager:
-    userID: [ "openIM123456", "openIM654321", "openIMAdmin" ]
-    nickname: [ "system1", "system2", "system3" ]
+    userID:
+    nickname:
+
+  im-admin:
+    userID: [ "imAdmin" ]
+    nickname: [ "imAdmin" ]
 
   # Multi-platform login policy
   # For each platform(Android, iOS, Windows, Mac, web), only one can be online at a time
@@ -295,9 +303,18 @@ config:
       enable: false
       timeout: 5
       failedContinue: true
+    beforeUpdateUserInfoEx:
+      enable:  false
+      timeout: 5
+      failedContinue: true
+    afterUpdateUserInfoEx:
+      enable:  false
+      timeout: 5
+      failedContinue: true
     afterSendSingleMsg:
       enable: false
       timeout: 5
+      failedContinue: true
     beforeSendGroupMsg:
       enable: false
       timeout: 5
@@ -305,6 +322,7 @@ config:
     afterSendGroupMsg:
       enable: false
       timeout: 5
+      failedContinue: true
     msgModify:
       enable: false
       timeout: 5
@@ -312,12 +330,15 @@ config:
     userOnline:
       enable: false
       timeout: 5
+      failedContinue: true
     userOffline:
       enable: false
       timeout: 5
+      failedContinue: true
     userKickOff:
       enable: false
       timeout: 5
+      failedContinue: true
     offlinePush:
       enable: false
       timeout: 5
@@ -334,7 +355,15 @@ config:
       enable: false
       timeout: 5
       failedContinue: true
+    beforeUpdateUserInfo:
+      enable: false
+      timeout: 5
+      failedContinue: true
     beforeCreateGroup:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    afterCreateGroup:
       enable: false
       timeout: 5
       failedContinue: true
@@ -346,7 +375,119 @@ config:
       enable: false
       timeout: 5
       failedContinue: true
+    afterSetGroupMemberInfo:
+      enable: false
+      timeout: 5
+      failedContinue: true
     setMessageReactionExtensions:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    quitGroup:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    killGroupMember:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    dismissGroup:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    joinGroup:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    groupMsgRead:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    singleMsgRead:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    updateUserInfo:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    beforeUserRegister:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    afterUserRegister:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    transferGroupOwner:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    beforeSetFriendRemark:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    afterSetFriendRemark:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    afterGroupMsgRead:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    afterGroupMsgRevoke:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    afterJoinGroup:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    beforeInviteUserToGroup:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    joinGroupAfter:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    setGroupInfoAfter:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    setGroupInfoBefore:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    revokeMsgAfter:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    addBlackBefore:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    addFriendAfter:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    addFriendAgreeBefore:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    deleteFriendAfter:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    importFriendsBefore:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    importFriendsAfter:
+      enable: false
+      timeout: 5
+      failedContinue: true
+    removeBlackAfter:
       enable: false
       timeout: 5
       failedContinue: true
@@ -356,7 +497,7 @@ config:
   # The number of Prometheus ports per service needs to correspond to rpcPort
   # The number of ports needs to be consistent with msg_transfer_service_num in script/path_info.sh
   prometheus:
-    enable: false
+    enable: true
     grafanaUrl: "https://openim2.server.top/"
     apiPrometheusPort: [ 90 ]
     userPrometheusPort: [ 90 ]
