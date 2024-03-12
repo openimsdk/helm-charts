@@ -6,11 +6,15 @@ The latest version is as follows:
 
 ```bash
 service         chart-version    imageVersion
-openim-server   0.1.2            release-v3.5
-openim-chat     0.1.2            release-V1.5
+openim-server   0.1.2            release-v3.6
+openim-chat     0.1.2            release-v1.6
 openim-admin    0.1.2            toc-base-open-k8s.35
 openim-web      0.1.1            preview-k8s
 ```
+
+**About helm charts version management**
+
++ [version management](./docs/contrib/version.md)
 
 ## Prerequisites
 
@@ -167,6 +171,4 @@ helm install openim-admin -f k8s-adminfront-config.yaml ./charts/openim-admin/ -
 ```
 
 ## How to use grafana
-[docs/user-guider.md](docs/user-guide.md)
-
-
+[docs/user-guider.md](docs/contrib/user-guide.md)
