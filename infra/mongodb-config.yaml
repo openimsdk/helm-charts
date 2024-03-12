@@ -10,9 +10,9 @@ auth:
   enabled: true
   rootUser: root
   rootPassword: "openIM123"
-  usernames: [openim]
+  usernames: [openIM]
   passwords: [openIM123]
-  databases: [openIM_v3]
+  databases: [openim_v3]
 
 persistence:
   size: 1Gi
