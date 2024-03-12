@@ -92,10 +92,10 @@ config:
     username:
     password: openIM123
 
-  # liveKit:
-  #   liveKitUrl: "ws://172.28.0.1:7880" # LIVEKIT_URL, LiveKit server address and port
-  #   key: "APIDXJxJeCL8haY" # LIVEKIT_API_KEY
-  #   secret: "ak1qulJ3nfXeflQHWBdmQDc4js4ueMc5OnxoORVJC2xA" # LIVEKIT_API_SECRET
+  liveKit:
+    liveKitUrl: "wss://im-livekiturl:7880" # 使用wss://代替ws://以启用加密连接
+    key: "" # LIVEKIT_API_KEY
+    secret: "" # LIVEKIT_API_SECRET
 
   mongo:
     uri: ''

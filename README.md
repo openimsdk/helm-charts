@@ -33,7 +33,7 @@ openim-web      0.1.1            preview-k8s
 ## Directory Structure
 + **docs/**: user-guide docs,how to use grafana and loki
 + **charts/**: Helm Charts for "openim-admin","openim-chat","openim-server","openim-web"
-+ **infra**: Contains Helm Charts/configurations for middleware OpenIM relies on(e.g. kafka,minio,mongodb,mysql,redis;prometheus and loki are also included).
++ **infra**: Contains Helm Charts/configurations for middleware OpenIM relies on(e.g. kafka,minio,mongodb,redis;prometheus and loki are also included).
 + **config-imserver.yaml**: openim-server's config file,Used to generate configmap for openim-server.
 + **config-chatserver.yaml**: openim-chat's config file,Used to generate configmap for openim-chat.
 + **k8s-adminfront-config.yaml**: custom values configurations for openim-admin chart
@@ -73,35 +73,51 @@ helm install loki-stack infra/loki-stack/ -n openim
 > in this we use grafana in kube-prometheus-stack for loki display,so you should config the datasource of loki using "http://loki-stack:3100"
 >
 
+### [Optional] Installing LiveKit
+
+LiveKit has not yet been integrated into Helm charts. If you require audio and video capabilities, please refer to the LiveKit Helm charts for deployment: [https://github.com/livekit/livekit-helm](https://github.com/livekit/livekit-helm). Additionally, you will need to modify the corresponding settings in [config-chatserver.yaml](config-chatserver.yaml) related to LiveKit.
+
+The configuration settings are as follows:
+```
+  liveKit:
+    liveKitUrl: "wss://im-livekiturl:7880" # Use wss:// instead of ws:// to enable encrypted connections
+    key: "" # LIVEKIT_API_KEY
+    secret: "" # LIVEKIT_API_SECRET
+```
+
+To configure these settings, you need to:
+
+1. **liveKitUrl**: Replace `"wss://im-livekiturl:7880"` with the WebSocket Secure (WSS) URL of your LiveKit server. The `wss://` protocol ensures that the connection to the LiveKit server is encrypted for security.
+
+2. **key**: Fill in the `key` field with your LiveKit API key. The API key is used to authenticate your application's access to the LiveKit server.
+
+3. **secret**: Fill in the `secret` field with your LiveKit API secret. The API secret is a critical component of your application's security, enabling secure communication between your server and the LiveKit server.
+
+Make sure to save the changes to `config-chatserver.yaml` after updating these settings to ensure that your chat server can communicate with the LiveKit server using the correct credentials and connection details.
+
 ### Install Middleware
 
 Deploy required middleware services:
 
-1. install im-mysql,change global.storageClass in infra/mysql-config.yaml to your real storageClass.
-
-```bash
-helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
-```
-
-2. install im-kafka,change global.storageClass in infra/kafka-config.yaml to your real storageClass.
+1. install im-kafka,change global.storageClass in infra/kafka-config.yaml to your real storageClass.
 
 ```bash
 helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
 ```
 
-3. install im-mongodb,change global.storageClass in infra/mongodb-config.yaml to your real storageClass.
+2. install im-mongodb,change global.storageClass in infra/mongodb-config.yaml to your real storageClass.
 
 ```bash
 helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
 ```
 
-4. install im-redis,change global.storageClass in infra/redis-config.yaml to your real storageClass.
+3. install im-redis,change global.storageClass in infra/redis-config.yaml to your real storageClass.
 
 ```bash
 helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 ```
 
-5. install im-minio,change global.storageClass in infra/minio-config.yaml to your real storageClass; and change domain, tls name to your real configuration.
+4. install im-minio,change global.storageClass in infra/minio-config.yaml to your real storageClass; and change domain, tls name to your real configuration.
 
 ```bash
 helm install im-minio infra/minio -f infra/minio-config.yaml -n openim

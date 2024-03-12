@@ -57,7 +57,7 @@ helm install kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometh
 > **注意**
 > 如果你想使用Prometheus的告警功能，请修改alertmanager.config 文件中的邮件名称和授权码成真实有效的.
 >
->
+
 ### [可选]安装 loki
 
 安装 loki-stack 组件:
@@ -65,6 +65,12 @@ helm install kube-prometheus-stack infra/kube-prometheus-stack/ -f infra/prometh
 ```bash
 helm install loki-stack infra/loki-stack/ -n openim
 ```
+
+### [可选]安装 livekit
+
+livekit 目前还没有集成到 helm charts 中，如果有音视频的需求，那么请你参考 livekit 的 helm charts 部署：[https://github.com/livekit/livekit-helm](https://github.com/livekit/livekit-helm)。除此之外，还需要修改对应的 [config-chatserver.yaml](config-chatserver.yaml) 中关于 livekit 的配置项。
+
+
 
 > **注意**
 > 这里我们使用的是 kube-prometheus-stack组件中的grafana，所以你应该在grafana的数据源配置loki使用url= "http://loki-stack:3100"
@@ -74,27 +80,22 @@ helm install loki-stack infra/loki-stack/ -n openim
 
 通过helm chart脚本部署中间件服务:
 
-1. 安装 im-mysql,修改 infra/mysql-config.yaml 文件中global.storageClass变量成你真实的storageClass.
-```
-helm install im-mysql infra/mysql -f infra/mysql-config.yaml -n openim
-```
-
-2. 安装im-kafka,修改 infra/kafka-config.yaml 文件中global.storageClass变量成你真实的storageClass.
+1. 安装im-kafka,修改 infra/kafka-config.yaml 文件中global.storageClass变量成你真实的storageClass.
 ```
 helm install im-kafka infra/kafka -f infra/kafka-config.yaml -n openim
 ```
 
-3. 安装im-mongodb,修改 infra/mongodb-config.yaml 文件中global.storageClass变量成你真实的storageClass.
+2. 安装im-mongodb,修改 infra/mongodb-config.yaml 文件中global.storageClass变量成你真实的storageClass.
 ```
 helm install im-mongodb infra/mongodb -f infra/mongodb-config.yaml -n openim
 ```
 
-4. 安装im-redis,修改 infra/redis-config.yaml 文件中global.storageClass变量成你真实的storageClass.
+3. 安装im-redis,修改 infra/redis-config.yaml 文件中global.storageClass变量成你真实的storageClass.
 ```
 helm install im-redis infra/redis -f infra/redis-config.yaml -n openim
 ```
 
-5. 安装im-minio,修改 infra/minio-config.yaml 文件中global.storageClass变量成你真实的storageClass; 并且修改域名信息成你真实的域名和tls名称.
+4. 安装im-minio,修改 infra/minio-config.yaml 文件中global.storageClass变量成你真实的storageClass; 并且修改域名信息成你真实的域名和tls名称.
 ```
 helm install im-minio infra/minio -f infra/minio-config.yaml -n openim
 ```
