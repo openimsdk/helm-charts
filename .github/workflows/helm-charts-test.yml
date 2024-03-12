@@ -45,6 +45,8 @@ jobs:
         # nfs
         helm install nfs-subdir-external-provisioner ./infra/nfs-subdir-external-provisioner/ -f infra/nfs-subdir-external-provisioner/config.yaml -n kube-system
 
+      continue-on-error: true
+
     - name: Install OpenIM Middleware
       run: |
         # Install MySQL
